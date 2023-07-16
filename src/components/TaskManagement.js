@@ -33,10 +33,8 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Link from "@mui/material/Link";
 import StepLabel from "@mui/material/StepLabel";
-// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useDrag, useDrop } from "react-dnd";
+import { useCallback } from "react";
 
 const CustomStepIcon = ({ active, completed, icon }) => {
   return (
@@ -109,6 +107,36 @@ function TaskManagement() {
     console.info("You clicked a breadcrumb.");
   }
 
+  const CardTypes = {
+    CARD: "card",
+    CONTAINER: "container",
+  };
+
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: "div",
+      item: { taskId: task.length > 0 ? task[task.length - 1].id : null },
+      collect: (monitor) => ({
+        isDragging: !!monitor.isDragging(),
+      }),
+    }),
+    [task]
+  );
+
+  const handleDeleteDrop = useCallback((taskId) => {
+    setTask((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  }, []);
+
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: "div",
+    drop: (item) => {
+      handleDeleteDrop(item.taskId);
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
   const breadcrumbs = [
     <Link
       underline="hover"
@@ -119,37 +147,10 @@ function TaskManagement() {
     >
       Dashboard
     </Link>,
-    <Link
-      underline="hover"
-      key="2"
-      color="inherit"
-      //   href="/material-ui/getting-started/installation/"
-      //   onClick={handleClick}
-    >
+    <Link underline="hover" key="2" color="inherit">
       Task management
     </Link>,
-    // <Typography key="3" color="text.primary">
-    //   Breadcrumb
-    // </Typography>,
   ];
-
-  // const addCard = () => {
-  //   // const newCard = { id: cards.length + 1, title: "New Card" };
-  //   // setCards([...cards, newCard]);
-
-  //   const newTask = {
-  //     name: name,
-  //     priority: priority,
-  //     stage: stage,
-  //   };
-
-  //   setTask([...task, newTask]);
-  //   console.log("hello", task);
-  //   // setName("");
-  //   // setPriority("");
-  //   // setStage("");
-  //   setOpen(false);
-  // };
 
   const addCard = () => {
     const newTask = {
@@ -275,41 +276,9 @@ function TaskManagement() {
     handleNext();
   };
 
-  // const handleReset = () => {
-  //   setActiveStep(0);
-  //   setCompleted({});
-  // };
-
-  // const handleModalOpen = () => {
-  //   // setModal(true);
-  //   // console.log("hello");
-  //   setEditMode(false);
-  //   setOpen(true);
-  // };
-
   const handleModalOpen = (isEditMode) => {
-    // setEditMode(isEditMode);
-    // if (isEditMode) {
-    //   console.log("true")
-    //   setEditMode(true);
-    // } else {
-    //   setEditMode(false);
-    //   console.log("true")
-    // }
     setOpen(true);
-    // setName("");
-    // setPriority("");
-    // setStage("");
-    // setEditMode(isEditMode);
-    // setOpen(true);
   };
-
-  // const handleModalOpen2 = (isEditMode) => {
-  //   setOpen2(true);
-  //   // setName("");
-  //   // setPriority("");
-  //   // setStage("");
-  // };
 
   const handleModalOpen2 = (taskToEdit) => {
     setEditedTask(taskToEdit);
@@ -328,23 +297,8 @@ function TaskManagement() {
   };
 
   const handleDelete = (taskId) => {
-    const updatedTasks = task.filter((t) => t.id !== taskId);
-    setTask(updatedTasks);
+    setTask((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
   };
-
-  // const [activeStep, setActiveStep] = useState(0);
-
-  // const handleNext = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  // };
-
-  // const handleBack = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  // };
-
-  // const handleReset = () => {
-  //   setActiveStep(0);
-  // };
 
   const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
 
@@ -363,14 +317,6 @@ function TaskManagement() {
           <br />
           <br />
           <br />
-          {/* <button onClick={handleModalOpen}>Add task</button> */}
-          {/* <Card /> */}
-          {/* <Modal
-        modal={modal}
-        setModal={setModal}
-        handleModalOpen={handleModalOpen}
-      /> */}
-          {/* <button onClick={handleModalOpen}>Add task</button> */}
           <Modal
             open={open}
             onClose={handleClose}
@@ -542,21 +488,7 @@ function TaskManagement() {
 
           {/* edit modal end */}
           <Box sx={{ width: "100%" }}>
-            <Container>
-              {/* <Stepper nonLinear activeStep={activeStep}>
-                {steps.map((label, index) => (
-                  <Step key={label} completed={completed[index]}>
-                    <StepButton
-                      color="inherit"
-                      onClick={handleStep(index)}
-                      StepIconComponent={CustomStepIcon}
-                    >
-                      {label}
-                    </StepButton>
-                  </Step>
-                ))}
-              </Stepper> */}
-            </Container>
+            <Container></Container>
             <div>
               {allStepsCompleted() ? (
                 <React.Fragment>
@@ -570,285 +502,132 @@ function TaskManagement() {
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  {/* <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
-                    Step {activeStep + 1}
-                  </Typography> */}
-
                   {task.map((t) => {
                     return (
-                      <Container key={t.id}>
-                        <div>
-                          <Box key={t.id}>
-                            <Stepper activeStep={t.activeStep}>
-                              {steps.map((label, index) => (
-                                <Step key={label}>
-                                  <StepLabel>{label}</StepLabel>
-                                </Step>
-                              ))}
-                            </Stepper>
-                          </Box>
-                        </div>
-                        <br />
-                        <Box
-                          mb={2}
-                          sx={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" }}
-                        >
-                          <Card>
-                            <CardContent>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
-                              >
+                      <div ref={drag} key={t.id}>
+                        <Container>
+                          <div>
+                            <Box key={t.id}>
+                              <Stepper activeStep={t.activeStep}>
+                                {steps.map((label, index) => (
+                                  <Step key={label}>
+                                    <StepLabel>{label}</StepLabel>
+                                  </Step>
+                                ))}
+                              </Stepper>
+                            </Box>
+                          </div>
+                          <br />
+                          <Box
+                            mb={2}
+                            sx={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" }}
+                          >
+                            <Card>
+                              <CardContent>
                                 <Box
                                   sx={{
                                     display: "flex",
                                     justifyContent: "space-between",
                                     alignItems: "center",
-                                    flexDirection: "column",
                                   }}
                                 >
-                                  <Typography variant="h5" component="div">
-                                    {t.name}
-                                  </Typography>
-                                  <br />
-                                  <br />
-                                  <br />
-                                  <button
-                                    type="submit"
-                                    // className="task-management-button"
-                                    disabled={t.activeStep === 0}
-                                    onClick={() => handleBack(t.id)}
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      flexDirection: "column",
+                                    }}
                                   >
-                                    Back
-                                  </button>
-                                </Box>
-                                <Box>
-                                  {/* <h4>
+                                    <Typography variant="h5" component="div">
+                                      {t.name}
+                                    </Typography>
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <button
+                                      type="submit"
+                                      // className="task-management-button"
+                                      disabled={t.activeStep === 0}
+                                      onClick={() => handleBack(t.id)}
+                                    >
+                                      Back
+                                    </button>
+                                  </Box>
+                                  <Box>
+                                    {/* <h4>
                                     {activeStep === 0 && "Backlog"}
                                     {activeStep === 1 && "To Do"}
                                     {activeStep === 2 && "Ongoing"}
                                     {activeStep === 3 && "Done"}
                                   </h4> */}
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "flex-end",
-                                    }}
-                                  >
-                                    <Tooltip title="Delete">
-                                      <IconButton
-                                        sx={{
-                                          "&:hover": {
-                                            backgroundColor:
-                                              "rgba(255, 0, 0, 0.1)",
-                                          },
-                                        }}
-                                      >
-                                        <DeleteIcon
-                                          style={{
-                                            cursor: "pointer",
-                                            color: "red",
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "flex-end",
+                                      }}
+                                    >
+                                      <Tooltip title="Delete">
+                                        <IconButton
+                                          sx={{
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(255, 0, 0, 0.1)",
+                                            },
                                           }}
-                                          onClick={() => handleDelete(t.id)}
-                                        />
-                                      </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Edit">
-                                      <IconButton
-                                        sx={{
-                                          "&:hover": {
-                                            backgroundColor:
-                                              "rgba(255, 0, 0, 0.1)",
-                                          },
-                                        }}
-                                      >
-                                        <EditIcon
-                                          onClick={() => handleModalOpen2(t)}
-                                          style={{
-                                            cursor: "pointer",
-                                            color: "green",
+                                        >
+                                          <DeleteIcon
+                                            style={{
+                                              cursor: "pointer",
+                                              color: "red",
+                                            }}
+                                            onClick={() => handleDelete(t.id)}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                      <Tooltip title="Edit">
+                                        <IconButton
+                                          sx={{
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(255, 0, 0, 0.1)",
+                                            },
                                           }}
-                                        />
-                                      </IconButton>
-                                    </Tooltip>
+                                        >
+                                          <EditIcon
+                                            onClick={() => handleModalOpen2(t)}
+                                            style={{
+                                              cursor: "pointer",
+                                              color: "green",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      </Tooltip>
+                                    </Box>
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <button
+                                      type="submit"
+                                      className="task-management-button"
+                                      disabled={t.activeStep === 3}
+                                      onClick={() => handleNext(t.id)}
+                                    >
+                                      Next
+                                    </button>
                                   </Box>
-                                  <br />
-                                  <br />
-                                  <br />
-                                  <button
-                                    type="submit"
-                                    className="task-management-button"
-                                    disabled={t.activeStep === 3}
-                                    onClick={() => handleNext(t.id)}
-                                  >
-                                    Next
-                                  </button>
                                 </Box>
-                              </Box>
-                            </CardContent>
-                          </Card>
-                        </Box>
-                      </Container>
+                              </CardContent>
+                            </Card>
+                          </Box>
+                        </Container>
+                      </div>
                     );
                   })}
 
-                  {/* 
-                  {activeStep === 0 && (
-                    <Card sx={{ width: "240px" }}>
-                      <CardContent>
-                        <Typography variant="h5" component="div">
-                          {task.map((d) => (
-                            <div>
-                              <h4>{d.name}</h4>
-                              {d.priority === 0 && (
-                                <KeyboardDoubleArrowUpIcon
-                                  style={{ color: "red" }}
-                                />
-                              )}
-                              {d.priority === 1 && (
-                                <KeyboardDoubleArrowRightIcon
-                                  style={{ color: "yellow" }}
-                                />
-                              )}
-                              {d.priority === 2 && (
-                                <KeyboardDoubleArrowDownIcon
-                                  style={{ color: "green" }}
-                                />
-                              )}
-                              <EditIcon
-                                onClick={() => setOpen(true)}
-                                style={{ cursor: "pointer" }}
-                              />
-                            </div>
-                          ))}
-                        </Typography>
-                        <Typography
-                          sx={{ mb: 1.5 }}
-                          color="text.secondary"
-                        ></Typography>
-                        <Typography variant="body2">
-                          <TimelapseIcon />
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {activeStep === 1 && (
-                    <Card sx={{ width: "240px", marginLeft: "380px" }}>
-                      <CardContent>
-                        <Typography
-                          sx={{ fontSize: 14 }}
-                          color="text.secondary"
-                          gutterBottom
-                        >
-                          Word of the Day
-                        </Typography>
-                        <Typography variant="h5" component="div">
-                          be{bull}nev{bull}o{bull}lent
-                        </Typography>
-                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                          adjective
-                        </Typography>
-                        <Typography variant="body2">
-                          well meaning and kindly.
-                          <br />
-                          {'"a benevolent smile"'}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Button size="small">Learn More</Button>
-                      </CardActions>
-                    </Card>
-                  )}
-
-                  {activeStep === 2 && (
-                    <Card sx={{ width: "240px", marginLeft: "780px" }}>
-                      <CardContent>
-                        <Typography
-                          sx={{ fontSize: 14 }}
-                          color="text.secondary"
-                          gutterBottom
-                        >
-                          Word of the Day
-                        </Typography>
-                        <Typography variant="h5" component="div">
-                          be{bull}nev{bull}o{bull}lent
-                        </Typography>
-                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                          adjective
-                        </Typography>
-                        <Typography variant="body2">
-                          well meaning and kindly.
-                          <br />
-                          {'"a benevolent smile"'}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Button size="small">Learn More</Button>
-                      </CardActions>
-                    </Card>
-                  )}
-
-                  {activeStep === 3 && (
-                    <Card sx={{ width: "240px", marginLeft: "1080px" }}>
-                      <CardContent>
-                        <Typography
-                          sx={{ fontSize: 14 }}
-                          color="text.secondary"
-                          gutterBottom
-                        >
-                          Word of the Day
-                        </Typography>
-                        <Typography variant="h5" component="div">
-                          be{bull}nev{bull}o{bull}lent
-                        </Typography>
-                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                          adjective
-                        </Typography>
-                        <Typography variant="body2">
-                          well meaning and kindly.
-                          <br />
-                          {'"a benevolent smile"'}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Button size="small">Learn More</Button>
-                      </CardActions>
-                    </Card>
-                  )} */}
-
                   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                    {/* <Button
-                      color="inherit"
-                      disabled={activeStep === 0}
-                      onClick={handleBack}
-                      sx={{ mr: 1 }}
-                    >
-                      Prev
-                    </Button> */}
                     <Box sx={{ flex: "1 1 auto" }} />
-                    {/* <Button onClick={handleNext} sx={{ mr: 1 }}>
-                      Next
-                    </Button> */}
-                    {/* {activeStep !== steps.length &&
-                      (completed[activeStep] ? (
-                        <Typography
-                          variant="caption"
-                          sx={{ display: "inline-block" }}
-                        >
-                          Step {activeStep + 1} already completed
-                        </Typography>
-                      ) : (
-                        <Button onClick={handleComplete}>
-                          {completedSteps() === totalSteps() - 1
-                            ? "Finish"
-                            : "Complete Task"}
-                        </Button>
-                      ))} */}
                   </Box>
                 </React.Fragment>
               )}
@@ -863,6 +642,24 @@ function TaskManagement() {
             >
               Add task
             </button>
+            <Tooltip title="Delete">
+              <IconButton
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                  },
+                }}
+              >
+                <DeleteIcon
+                  ref={drop}
+                  style={{
+                    cursor: "pointer",
+                    color: "red",
+                  }}
+                  // onClick={(t) => handleDelete(t.id)}
+                />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Container>
       </Box>
