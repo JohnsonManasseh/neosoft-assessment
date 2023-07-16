@@ -196,9 +196,9 @@ const RegisterForm = () => {
             <Grid item xs={6}>
               <TextField
                 id="outlined-basic"
-                label="Contact Number (Optional)"
+                label="Contact Number"
                 variant="outlined"
-                type="email"
+                type="number"
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
                 sx={{ width: "350px", marginBottom: "40px" }}
@@ -209,7 +209,7 @@ const RegisterForm = () => {
             <Grid item xs={6}>
               <TextField
                 name="upload-photo"
-                label="Profile Image (Optional)"
+                label="Profile Image"
                 InputLabelProps={{
                   shrink: true,
                 }}

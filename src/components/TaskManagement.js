@@ -86,10 +86,14 @@ function TaskManagement() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("");
   const [stage, setStage] = useState("");
   const [task, setTask] = useState([]);
+  const [cards, setCards] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [editedTask, setEditedTask] = useState([]);
 
   function handleClick(event) {
     event.preventDefault();
@@ -121,6 +125,38 @@ function TaskManagement() {
     //   Breadcrumb
     // </Typography>,
   ];
+
+  const addCard = () => {
+    // const newCard = { id: cards.length + 1, title: "New Card" };
+    // setCards([...cards, newCard]);
+
+    const newTask = {
+      name: name,
+      priority: priority,
+      stage: stage,
+    };
+
+    setTask([...task, newTask]);
+    console.log("hello", task);
+    // setName("");
+    // setPriority("");
+    // setStage("");
+    setOpen(false);
+  };
+
+  const editCard = () => {
+    const updatedTask = {
+      name: name,
+      priority: priority,
+      stage: stage,
+    };
+
+    const updatedTasks = task.map((t) =>
+      t.id === editedTask.id ? updatedTask : t
+    );
+    setTask(updatedTasks);
+    setOpen2(false);
+  };
 
   const handleAddTask = () => {
     const task = {
@@ -190,14 +226,40 @@ function TaskManagement() {
     setCompleted({});
   };
 
-  const handleModalOpen = () => {
-    // setModal(true);
-    // console.log("hello");
+  // const handleModalOpen = () => {
+  //   // setModal(true);
+  //   // console.log("hello");
+  //   setEditMode(false);
+  //   setOpen(true);
+  // };
+
+  const handleModalOpen = (isEditMode) => {
+    // setEditMode(isEditMode);
+    // if (isEditMode) {
+    //   console.log("true")
+    //   setEditMode(true);
+    // } else {
+    //   setEditMode(false);
+    //   console.log("true")
+    // }
     setOpen(true);
+    // setName("");
+    // setPriority("");
+    // setStage("");
+    // setEditMode(isEditMode);
+    // setOpen(true);
+  };
+
+  const handleModalOpen2 = (isEditMode) => {
+    setOpen2(true);
+    // setName("");
+    // setPriority("");
+    // setStage("");
   };
 
   const handleClose = () => {
     setOpen(false);
+    setOpen2(false);
   };
 
   const navigate = useNavigate();
@@ -234,7 +296,7 @@ function TaskManagement() {
           >
             <Box sx={style}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
-                Create task
+                Create Task
               </Typography>
               <TextField
                 id="outlined-basic"
@@ -283,7 +345,7 @@ function TaskManagement() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={stage}
+                    value={priority}
                     label={
                       <>
                         Stage <span style={{ color: "red" }}>*</span>
@@ -304,12 +366,97 @@ function TaskManagement() {
               <DatePicker label="Basic date picker" />
             </DemoContainer>
           </LocalizationProvider> */}
-              <button onClick={handleAddTask} type="submit">
+              <button onClick={addCard} type="submit">
                 Add
               </button>
             </Box>
           </Modal>
           {/* edit modal */}
+
+          <Modal
+            open={open2}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Edit Task
+              </Typography>
+              <TextField
+                id="outlined-basic"
+                label={
+                  <>
+                    Task name <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                variant="outlined"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                sx={{ width: "350px", marginBottom: "40px" }}
+                rows={4}
+                className="textfield-margin"
+              />
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">
+                    Stage <span style={{ color: "red" }}>*</span>
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={stage}
+                    label={
+                      <>
+                        Stage <span style={{ color: "red" }}>*</span>
+                      </>
+                    }
+                    onChange={(e) => setStage(e.target.value)}
+                    sx={{ width: "350px", marginBottom: "40px" }}
+                  >
+                    <MenuItem value={0}>Backlog stage</MenuItem>
+                    <MenuItem value={1}>To Do stage</MenuItem>
+                    <MenuItem value={2}>Done stage</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">
+                    Priority <span style={{ color: "red" }}>*</span>
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={priority}
+                    label={
+                      <>
+                        Stage <span style={{ color: "red" }}>*</span>
+                      </>
+                    }
+                    onChange={(e) => setPriority(e.target.value)}
+                    sx={{ width: "350px", marginBottom: "40px" }}
+                  >
+                    <MenuItem value={0}>High</MenuItem>
+                    <MenuItem value={1}>Medium</MenuItem>
+                    <MenuItem value={2}>Low</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* <LocalizationProvider>
+            <DemoContainer components={["DatePicker"]}>
+              <DatePicker label="Basic date picker" />
+            </DemoContainer>
+          </LocalizationProvider> */}
+              <button onClick={editCard} type="submit">
+                Edit
+              </button>
+            </Box>
+          </Modal>
+
           {/* edit modal end */}
           <Box sx={{ width: "100%" }}>
             <Container>
@@ -343,17 +490,72 @@ function TaskManagement() {
                   {/* <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
                     Step {activeStep + 1}
                   </Typography> */}
+
+                  {task.map((t) => {
+                    return (
+                      <Container key={t.id}>
+                        <Box mb={2}>
+                          <Card>
+                            <CardContent>
+                              <Typography variant="h5" component="div">
+                                {/* {editedTask && editedTask.map((t) => t.name)} */}
+                                {t.name}
+                                {t.priority === 0 && (
+                                  <KeyboardDoubleArrowUpIcon
+                                    style={{ color: "red" }}
+                                  />
+                                )}
+                                {t.priority === 1 && (
+                                  <KeyboardDoubleArrowRightIcon
+                                    style={{ color: "yellow" }}
+                                  />
+                                )}
+                                {t.priority === 2 && (
+                                  <KeyboardDoubleArrowDownIcon
+                                    style={{ color: "green" }}
+                                  />
+                                )}
+                                <EditIcon
+                                  onClick={handleModalOpen2}
+                                  style={{ cursor: "pointer" }}
+                                />
+
+                                {/* {task.map((d) => (
+                                  <div>
+                                    <h4>{d.name}</h4>
+                                    {d.priority === 0 && (
+                                      <KeyboardDoubleArrowUpIcon
+                                        style={{ color: "red" }}
+                                      />
+                                    )}
+                                    {d.priority === 1 && (
+                                      <KeyboardDoubleArrowRightIcon
+                                        style={{ color: "yellow" }}
+                                      />
+                                    )}
+                                    {d.priority === 2 && (
+                                      <KeyboardDoubleArrowDownIcon
+                                        style={{ color: "green" }}
+                                      />
+                                    )}
+                                    <EditIcon
+                                      onClick={() => setOpen(true)}
+                                      style={{ cursor: "pointer" }}
+                                    />
+                                  </div>
+                                ))} */}
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        </Box>
+                      </Container>
+                    );
+                  })}
+
+                  {/* 
                   {activeStep === 0 && (
                     <Card sx={{ width: "240px" }}>
                       <CardContent>
-                        {/* <Typography
-                      sx={{ fontSize: 14 }}
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      Word of the Day
-                    </Typography> */}
-
                         <Typography variant="h5" component="div">
                           {task.map((d) => (
                             <div>
@@ -388,9 +590,6 @@ function TaskManagement() {
                           <TimelapseIcon />
                         </Typography>
                       </CardContent>
-                      {/* <CardActions>
-                    <Button size="small">Learn More</Button>
-                  </CardActions> */}
                     </Card>
                   )}
 
@@ -476,7 +675,7 @@ function TaskManagement() {
                         <Button size="small">Learn More</Button>
                       </CardActions>
                     </Card>
-                  )}
+                  )} */}
 
                   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                     <Button
