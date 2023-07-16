@@ -28,8 +28,11 @@ import Container from "@mui/material/Container";
 import Navbar from "./Navbar";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import Link from "@mui/material/Link";
+import StepLabel from "@mui/material/StepLabel";
 // import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 // import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -54,7 +57,7 @@ const CustomStepIcon = ({ active, completed, icon }) => {
   );
 };
 
-const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
+// const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
 
 const bull = (
   <Box
@@ -94,6 +97,10 @@ function TaskManagement() {
   const [cards, setCards] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [editedTask, setEditedTask] = useState([]);
+  const [tasks, setTasks] = useState([
+    { id: 1, name: "Task 1", activeStep: 0 },
+    { id: 2, name: "Task 2", activeStep: 0 },
+  ]);
 
   function handleClick(event) {
     event.preventDefault();
@@ -126,34 +133,51 @@ function TaskManagement() {
     // </Typography>,
   ];
 
-  const addCard = () => {
-    // const newCard = { id: cards.length + 1, title: "New Card" };
-    // setCards([...cards, newCard]);
+  // const addCard = () => {
+  //   // const newCard = { id: cards.length + 1, title: "New Card" };
+  //   // setCards([...cards, newCard]);
 
+  //   const newTask = {
+  //     name: name,
+  //     priority: priority,
+  //     stage: stage,
+  //   };
+
+  //   setTask([...task, newTask]);
+  //   console.log("hello", task);
+  //   // setName("");
+  //   // setPriority("");
+  //   // setStage("");
+  //   setOpen(false);
+  // };
+
+  const addCard = () => {
     const newTask = {
+      id: Math.random(),
       name: name,
       priority: priority,
       stage: stage,
+      activeStep: 0,
     };
 
     setTask([...task, newTask]);
     console.log("hello", task);
-    // setName("");
-    // setPriority("");
-    // setStage("");
+    setName("");
+    setPriority("");
+    setStage("");
     setOpen(false);
   };
 
   const editCard = () => {
     const updatedTask = {
+      id: Math.random(),
       name: name,
       priority: priority,
       stage: stage,
     };
 
-    const updatedTasks = task.map((t) =>
-      t.id === editedTask.id ? updatedTask : t
-    );
+    const updatedTasks = task.map((t) => (t === editedTask ? updatedTask : t));
+
     setTask(updatedTasks);
     setOpen2(false);
   };
@@ -194,19 +218,49 @@ function TaskManagement() {
     return completedSteps() === totalSteps();
   };
 
-  const handleNext = () => {
-    const newActiveStep =
-      isLastStep() && !allStepsCompleted()
-        ? // It's the last step, but not all steps have been completed,
-          // find the first step that has been completed
-          steps.findIndex((step, i) => !(i in completed))
-        : activeStep + 1;
-    setActiveStep(newActiveStep);
+  // const handleNext = () => {
+  //   const updatedTasks = task.map((t, index) => {
+  //     if (index === activeStep) {
+  //       return { ...t, stage: t.stage + 1 };
+  //     }
+  //     return t;
+  //   });
+  //   setTask(updatedTasks);
+  // };
+
+  const handleNext = (taskId) => {
+    setTask((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, activeStep: task.activeStep + 1 } : task
+      )
+    );
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  const handleBack = (taskId) => {
+    setTask((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, activeStep: task.activeStep - 1 } : task
+      )
+    );
   };
+
+  const handleReset = (taskId) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, activeStep: 0 } : task
+      )
+    );
+  };
+
+  // const handleBack = () => {
+  //   const updatedTasks = task.map((t, index) => {
+  //     if (index === activeStep) {
+  //       return { ...t, stage: t.stage - 1 };
+  //     }
+  //     return t;
+  //   });
+  //   setTask(updatedTasks);
+  // };
 
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -221,10 +275,10 @@ function TaskManagement() {
     handleNext();
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-    setCompleted({});
-  };
+  // const handleReset = () => {
+  //   setActiveStep(0);
+  //   setCompleted({});
+  // };
 
   // const handleModalOpen = () => {
   //   // setModal(true);
@@ -250,11 +304,16 @@ function TaskManagement() {
     // setOpen(true);
   };
 
-  const handleModalOpen2 = (isEditMode) => {
+  // const handleModalOpen2 = (isEditMode) => {
+  //   setOpen2(true);
+  //   // setName("");
+  //   // setPriority("");
+  //   // setStage("");
+  // };
+
+  const handleModalOpen2 = (taskToEdit) => {
+    setEditedTask(taskToEdit);
     setOpen2(true);
-    // setName("");
-    // setPriority("");
-    // setStage("");
   };
 
   const handleClose = () => {
@@ -268,17 +327,41 @@ function TaskManagement() {
     navigate("taskmanagement");
   };
 
+  const handleDelete = (taskId) => {
+    const updatedTasks = task.filter((t) => t.id !== taskId);
+    setTask(updatedTasks);
+  };
+
+  // const [activeStep, setActiveStep] = useState(0);
+
+  // const handleNext = () => {
+  //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  // };
+
+  // const handleBack = () => {
+  //   setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  // };
+
+  // const handleReset = () => {
+  //   setActiveStep(0);
+  // };
+
+  const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
+
   return (
     <div>
       <Navbar />
       <Box marginTop="20px">
         <Container>
+          <br />
           <Breadcrumbs
             separator={<NavigateNextIcon fontSize="small" />}
             aria-label="breadcrumb"
           >
             {breadcrumbs}
           </Breadcrumbs>
+          <br />
+          <br />
           <br />
           {/* <button onClick={handleModalOpen}>Add task</button> */}
           {/* <Card /> */}
@@ -460,7 +543,7 @@ function TaskManagement() {
           {/* edit modal end */}
           <Box sx={{ width: "100%" }}>
             <Container>
-              <Stepper nonLinear activeStep={activeStep}>
+              {/* <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
                     <StepButton
@@ -472,7 +555,7 @@ function TaskManagement() {
                     </StepButton>
                   </Step>
                 ))}
-              </Stepper>
+              </Stepper> */}
             </Container>
             <div>
               {allStepsCompleted() ? (
@@ -482,7 +565,7 @@ function TaskManagement() {
                   </Typography>
                   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                     <Box sx={{ flex: "1 1 auto" }} />
-                    <Button onClick={handleReset}>Reset</Button>
+                    <Button onClick={() => handleReset(task.id)}>Reset</Button>
                   </Box>
                 </React.Fragment>
               ) : (
@@ -494,57 +577,118 @@ function TaskManagement() {
                   {task.map((t) => {
                     return (
                       <Container key={t.id}>
-                        <Box mb={2}>
+                        <div>
+                          <Box key={t.id}>
+                            <Stepper activeStep={t.activeStep}>
+                              {steps.map((label, index) => (
+                                <Step key={label}>
+                                  <StepLabel>{label}</StepLabel>
+                                </Step>
+                              ))}
+                            </Stepper>
+                          </Box>
+                        </div>
+                        <br />
+                        <Box
+                          mb={2}
+                          sx={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" }}
+                        >
                           <Card>
                             <CardContent>
-                              <Typography variant="h5" component="div">
-                                {/* {editedTask && editedTask.map((t) => t.name)} */}
-                                {t.name}
-                                {t.priority === 0 && (
-                                  <KeyboardDoubleArrowUpIcon
-                                    style={{ color: "red" }}
-                                  />
-                                )}
-                                {t.priority === 1 && (
-                                  <KeyboardDoubleArrowRightIcon
-                                    style={{ color: "yellow" }}
-                                  />
-                                )}
-                                {t.priority === 2 && (
-                                  <KeyboardDoubleArrowDownIcon
-                                    style={{ color: "green" }}
-                                  />
-                                )}
-                                <EditIcon
-                                  onClick={handleModalOpen2}
-                                  style={{ cursor: "pointer" }}
-                                />
-
-                                {/* {task.map((d) => (
-                                  <div>
-                                    <h4>{d.name}</h4>
-                                    {d.priority === 0 && (
-                                      <KeyboardDoubleArrowUpIcon
-                                        style={{ color: "red" }}
-                                      />
-                                    )}
-                                    {d.priority === 1 && (
-                                      <KeyboardDoubleArrowRightIcon
-                                        style={{ color: "yellow" }}
-                                      />
-                                    )}
-                                    {d.priority === 2 && (
-                                      <KeyboardDoubleArrowDownIcon
-                                        style={{ color: "green" }}
-                                      />
-                                    )}
-                                    <EditIcon
-                                      onClick={() => setOpen(true)}
-                                      style={{ cursor: "pointer" }}
-                                    />
-                                  </div>
-                                ))} */}
-                              </Typography>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  <Typography variant="h5" component="div">
+                                    {t.name}
+                                  </Typography>
+                                  <br />
+                                  <br />
+                                  <br />
+                                  <button
+                                    type="submit"
+                                    // className="task-management-button"
+                                    disabled={t.activeStep === 0}
+                                    onClick={() => handleBack(t.id)}
+                                  >
+                                    Back
+                                  </button>
+                                </Box>
+                                <Box>
+                                  {/* <h4>
+                                    {activeStep === 0 && "Backlog"}
+                                    {activeStep === 1 && "To Do"}
+                                    {activeStep === 2 && "Ongoing"}
+                                    {activeStep === 3 && "Done"}
+                                  </h4> */}
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "flex-end",
+                                    }}
+                                  >
+                                    <Tooltip title="Delete">
+                                      <IconButton
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor:
+                                              "rgba(255, 0, 0, 0.1)",
+                                          },
+                                        }}
+                                      >
+                                        <DeleteIcon
+                                          style={{
+                                            cursor: "pointer",
+                                            color: "red",
+                                          }}
+                                          onClick={() => handleDelete(t.id)}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Edit">
+                                      <IconButton
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor:
+                                              "rgba(255, 0, 0, 0.1)",
+                                          },
+                                        }}
+                                      >
+                                        <EditIcon
+                                          onClick={() => handleModalOpen2(t)}
+                                          style={{
+                                            cursor: "pointer",
+                                            color: "green",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </Box>
+                                  <br />
+                                  <br />
+                                  <br />
+                                  <button
+                                    type="submit"
+                                    className="task-management-button"
+                                    disabled={t.activeStep === 3}
+                                    onClick={() => handleNext(t.id)}
+                                  >
+                                    Next
+                                  </button>
+                                </Box>
+                              </Box>
                             </CardContent>
                           </Card>
                         </Box>
@@ -678,19 +822,19 @@ function TaskManagement() {
                   )} */}
 
                   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                    <Button
+                    {/* <Button
                       color="inherit"
                       disabled={activeStep === 0}
                       onClick={handleBack}
                       sx={{ mr: 1 }}
                     >
                       Prev
-                    </Button>
+                    </Button> */}
                     <Box sx={{ flex: "1 1 auto" }} />
-                    <Button onClick={handleNext} sx={{ mr: 1 }}>
+                    {/* <Button onClick={handleNext} sx={{ mr: 1 }}>
                       Next
-                    </Button>
-                    {activeStep !== steps.length &&
+                    </Button> */}
+                    {/* {activeStep !== steps.length &&
                       (completed[activeStep] ? (
                         <Typography
                           variant="caption"
@@ -704,14 +848,19 @@ function TaskManagement() {
                             ? "Finish"
                             : "Complete Task"}
                         </Button>
-                      ))}
+                      ))} */}
                   </Box>
                 </React.Fragment>
               )}
             </div>
           </Box>
-          <Box sx={{ textAlign: "end" }}>
-            <button sx={{ mt: "70px" }} type="submit" onClick={handleModalOpen}>
+          <Box sx={{ textAlign: "end", marginRight: "37px" }}>
+            <button
+              sx={{ mt: "70px" }}
+              className="task-management-button"
+              type="submit"
+              onClick={handleModalOpen}
+            >
               Add task
             </button>
           </Box>

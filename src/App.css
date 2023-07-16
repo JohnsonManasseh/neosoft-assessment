@@ -148,6 +148,34 @@ button[type="submit"] {
 button:hover {
   background-color: #0eaf94b0;
 }
+
+.css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed,
+.css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active {
+  color: #185a9d !important;
+}
+
+.task-management-button {
+  background-color: #185a9d !important;
+  color: white;
+  padding: 10px 50px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.task-management-button:hover {
+  background-color: #185b9db9;
+}
+
+.task-management-button {
+  background-color: rgba(24, 90, 157, 1) -8%;
+  color: white;
+  padding: 10px 50px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
 .button-container {
   display: flex;
   align-items: center;
