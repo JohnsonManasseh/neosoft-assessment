@@ -35,6 +35,11 @@ import Link from "@mui/material/Link";
 import StepLabel from "@mui/material/StepLabel";
 import { useDrag, useDrop } from "react-dnd";
 import { useCallback } from "react";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 const CustomStepIcon = ({ active, completed, icon }) => {
   return (
@@ -90,6 +95,7 @@ function TaskManagement() {
   const [open2, setOpen2] = useState(false);
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("");
+  const [date, setDate] = useState(null);
   const [stage, setStage] = useState("");
   const [task, setTask] = useState([]);
   const [cards, setCards] = useState([]);
@@ -99,6 +105,16 @@ function TaskManagement() {
     { id: 1, name: "Task 1", activeStep: 0 },
     { id: 2, name: "Task 2", activeStep: 0 },
   ]);
+
+  // const [showDateTooltip, setShowDateTooltip] = useState(false);
+
+  // const handleDateHover = () => {
+  //   setShowDateTooltip(true);
+  // };
+
+  // const handleDateHoverEnd = () => {
+  //   setShowDateTooltip(false);
+  // };
 
   function handleClick(event) {
     event.preventDefault();
@@ -158,6 +174,7 @@ function TaskManagement() {
       name: name,
       priority: priority,
       stage: stage,
+      date: date,
       activeStep: 0,
     };
 
@@ -166,6 +183,7 @@ function TaskManagement() {
     setName("");
     setPriority("");
     setStage("");
+    // setDate("");
     setOpen(false);
   };
 
@@ -194,6 +212,7 @@ function TaskManagement() {
     console.log("hello", task);
     setName("");
     setPriority("");
+    // setDate("");
     setStage("");
     setOpen(false);
   };
@@ -389,6 +408,26 @@ function TaskManagement() {
                   </Select>
                 </FormControl>
               </Box>
+              <Box sx={{ minWidth: "120px" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DatePicker"]}>
+                    <DatePicker
+                      label={
+                        <>
+                          Date <span style={{ color: "red" }}>*</span>
+                        </>
+                      }
+                      sx={{ width: "350px", marginBottom: "40px" }}
+                      onChange={(newDate) => {
+                        setDate(newDate);
+                        console.log(newDate);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                      value={date}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </Box>
 
               {/* <LocalizationProvider>
             <DemoContainer components={["DatePicker"]}>
@@ -583,6 +622,29 @@ function TaskManagement() {
                                               color: "red",
                                             }}
                                             onClick={() => handleDelete(t.id)}
+                                          />
+                                        </IconButton>
+
+                                        {/* <CalendarMonthIcon /> */}
+                                      </Tooltip>
+                                      <Tooltip
+                                        title={
+                                          date ? date.format("YYYY-MM-DD") : ""
+                                        }
+                                      >
+                                        <IconButton
+                                          sx={{
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(255, 0, 0, 0.1)",
+                                            },
+                                          }}
+                                        >
+                                          <CalendarMonthIcon
+                                            style={{
+                                              cursor: "pointer",
+                                              color: "blue",
+                                            }}
                                           />
                                         </IconButton>
                                       </Tooltip>
