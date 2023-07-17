@@ -68,7 +68,7 @@ function Navbar() {
               component="div"
               sx={{ flexGrow: 1, fontWeight: "bold", letterSpacing: "1px" }}
             >
-              Kanben
+              Kanban
             </Typography>
             <Button onClick={handleLogout} color="inherit">
               Logout
@@ -150,7 +150,7 @@ function Navbar() {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Kanben
+              Kanban
             </Typography>
             <Button onClick={handleLogout} color="inherit">
               Logout

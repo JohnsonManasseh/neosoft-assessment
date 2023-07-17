@@ -113,7 +113,9 @@ const RegisterForm = () => {
                 sx={{ width: "350px", marginBottom: "40px" }}
                 rows={4}
                 className="textfield-margin"
+                error="johnson"
               />
+
               {nameError && <div className="error-message">{nameError}</div>}
             </Grid>
 
@@ -149,7 +151,7 @@ const RegisterForm = () => {
                   </>
                 }
                 variant="outlined"
-                type="email"
+                // type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 sx={{ width: "350px", marginBottom: "40px" }}

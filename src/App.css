@@ -145,6 +145,19 @@ button[type="submit"] {
   transition: 0.3s ease;
 }
 
+/* .task-management-back-button{
+
+} */
+
+.date-error-message {
+  color: red;
+  /* margin-top: -17px; */
+  font-size: 13px;
+  /* position: absolute; */
+  /* margin-top: -37px; */
+  /* padding-bottom: 10px; */
+}
+
 button:hover {
   background-color: #0eaf94b0;
 }

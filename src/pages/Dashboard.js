@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
@@ -13,6 +13,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
+import { useSelector } from "react-redux";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   boxShadow: theme.shadows[3], // Adjust the shadow level (0 to 24) as needed
@@ -29,6 +30,8 @@ const bull = (
 
 function Dashboard() {
   const navigate = useNavigate();
+
+  const name = useSelector((state) => state.loginForm.name);
 
   function handleClick(event) {
     event.preventDefault();
@@ -69,7 +72,7 @@ function Dashboard() {
             {breadcrumbs}
           </Breadcrumbs>
           <br />
-          <h3 style={{ color: "rgba(24, 90, 157, 1)" }}>Welcome Johnson,</h3>
+          <h3 style={{ color: "rgba(24, 90, 157, 1)" }}>Welcome {name},</h3>
           <br />
           {/* <h1>dashboard</h1> */}
 
@@ -87,9 +90,6 @@ function Dashboard() {
                 <br />
                 <h3>10</h3>
               </CardContent>
-              {/* <CardActions>
-              <Button size="small">Learn More</Button>
-            </CardActions> */}
             </StyledCard>
 
             <StyledCard
@@ -102,9 +102,6 @@ function Dashboard() {
                 <br />
                 <h3>10</h3>
               </CardContent>
-              {/* <CardActions>
-              <Button size="small">Learn More</Button>
-            </CardActions> */}
             </StyledCard>
 
             <StyledCard sx={{ width: 450, textAlign: "center" }}>
@@ -115,9 +112,6 @@ function Dashboard() {
                 <br />
                 <h3>10</h3>
               </CardContent>
-              {/* <CardActions>
-              <Button size="small">Learn More</Button>
-            </CardActions> */}
             </StyledCard>
           </Box>
           <br />

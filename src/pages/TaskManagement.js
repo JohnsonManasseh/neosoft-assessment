@@ -1,17 +1,8 @@
 import React from "react";
-// import Modal from "./Modal";
 import { useState } from "react";
-// import Card from "./Card";
-import Step from "@mui/material/Step";
 import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-// import Step from "@mui/material/Step";
-import StepButton from "@mui/material/StepButton";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Card from "@mui/material/Card";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "@mui/material";
 import { TextField, Grid } from "@mui/material";
@@ -19,57 +10,21 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
-import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import TimelapseIcon from "@mui/icons-material/Timelapse";
-import EditIcon from "@mui/icons-material/Edit";
 import Container from "@mui/material/Container";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Link from "@mui/material/Link";
-import StepLabel from "@mui/material/StepLabel";
 import { useDrag, useDrop } from "react-dnd";
 import { useCallback } from "react";
-// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-
-const CustomStepIcon = ({ active, completed, icon }) => {
-  return (
-    <Box
-      sx={{
-        color: completed ? "rgba(67, 206, 162, 1)" : "inherit",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: 40,
-        width: 40,
-        borderRadius: "50%",
-        bgcolor: active ? "rgba(67, 206, 162, 1)" : "transparent",
-      }}
-    >
-      {icon}
-    </Box>
-  );
-};
-
-// const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
-
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
+import Task from "../components/Task";
 
 const style = {
   position: "absolute",
@@ -96,7 +51,7 @@ function TaskManagement() {
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("");
   const [date, setDate] = useState(null);
-  const [stage, setStage] = useState("");
+  const [stage, setStage] = useState(0);
   const [task, setTask] = useState([]);
   const [cards, setCards] = useState([]);
   const [editMode, setEditMode] = useState(false);
@@ -105,6 +60,12 @@ function TaskManagement() {
     { id: 1, name: "Task 1", activeStep: 0 },
     { id: 2, name: "Task 2", activeStep: 0 },
   ]);
+  const [taskNameError, setTaskNameError] = useState("");
+  const [stageError, setStageError] = useState("");
+  const [priorityError, setPriorityError] = useState("");
+  const [dateError, setDateError] = useState("");
+  // const [show, setShow] = useState(false);
+  //   const [taskName, setTaskName] = ("")
 
   // const [showDateTooltip, setShowDateTooltip] = useState(false);
 
@@ -169,22 +130,41 @@ function TaskManagement() {
   ];
 
   const addCard = () => {
-    const newTask = {
-      id: Math.random(),
-      name: name,
-      priority: priority,
-      stage: stage,
-      date: date,
-      activeStep: 0,
-    };
+    if (name === "") {
+      setTaskNameError("Please enter task name");
+    }
+    if (stage === "") {
+      setStageError("Please enter stage");
+    }
+    if (priority === "") {
+      setPriorityError("Please enter Priority");
+    }
+    if (date === null) {
+      setDateError("Please enter Date");
+    }
+    if (name !== "" && stage !== "" && priority !== "" && date !== "") {
+      setTaskNameError("");
+      setStageError("");
+      setPriorityError("");
+      setDateError("");
 
-    setTask([...task, newTask]);
-    console.log("hello", task);
-    setName("");
-    setPriority("");
-    setStage("");
-    // setDate("");
-    setOpen(false);
+      const newTask = {
+        id: Math.random(),
+        name: name,
+        priority: priority,
+        stage: stage,
+        date: date,
+        activeStep: 0,
+      };
+
+      setTask([...task, newTask]);
+      console.log("hello", task);
+      setName("");
+      setPriority("");
+      // setStage("");
+      // setDate("");
+      setOpen(false);
+    }
   };
 
   const editCard = () => {
@@ -238,16 +218,6 @@ function TaskManagement() {
     return completedSteps() === totalSteps();
   };
 
-  // const handleNext = () => {
-  //   const updatedTasks = task.map((t, index) => {
-  //     if (index === activeStep) {
-  //       return { ...t, stage: t.stage + 1 };
-  //     }
-  //     return t;
-  //   });
-  //   setTask(updatedTasks);
-  // };
-
   const handleNext = (taskId) => {
     setTask((prevTasks) =>
       prevTasks.map((task) =>
@@ -271,16 +241,6 @@ function TaskManagement() {
       )
     );
   };
-
-  // const handleBack = () => {
-  //   const updatedTasks = task.map((t, index) => {
-  //     if (index === activeStep) {
-  //       return { ...t, stage: t.stage - 1 };
-  //     }
-  //     return t;
-  //   });
-  //   setTask(updatedTasks);
-  // };
 
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -336,6 +296,7 @@ function TaskManagement() {
           <br />
           <br />
           <br />
+
           <Modal
             open={open}
             onClose={handleClose}
@@ -346,21 +307,27 @@ function TaskManagement() {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Create Task
               </Typography>
-              <TextField
-                id="outlined-basic"
-                label={
-                  <>
-                    Task name <span style={{ color: "red" }}>*</span>
-                  </>
-                }
-                variant="outlined"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                sx={{ width: "350px", marginBottom: "40px" }}
-                rows={4}
-                className="textfield-margin"
-              />
+              <br />
+              <Box sx={{ minWidth: 120 }}>
+                <TextField
+                  id="outlined-basic"
+                  label={
+                    <>
+                      Task name <span style={{ color: "red" }}>*</span>
+                    </>
+                  }
+                  variant="outlined"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  sx={{ width: "350px", marginBottom: "40px" }}
+                  rows={4}
+                  className="textfield-margin"
+                />
+                {taskNameError && (
+                  <div className="error-message">{taskNameError}</div>
+                )}
+              </Box>
               <Box sx={{ minWidth: 120 }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">
@@ -383,6 +350,9 @@ function TaskManagement() {
                     <MenuItem value={2}>Done stage</MenuItem>
                   </Select>
                 </FormControl>
+                {stageError && (
+                  <div className="error-message">{stageError}</div>
+                )}
               </Box>
 
               <Box sx={{ minWidth: 120 }}>
@@ -407,28 +377,37 @@ function TaskManagement() {
                     <MenuItem value={2}>Low</MenuItem>
                   </Select>
                 </FormControl>
+                {priorityError && (
+                  <div className="error-message">{priorityError}</div>
+                )}
               </Box>
-              <Box sx={{ minWidth: "120px" }}>
-                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DatePicker"]}>
-                    <DatePicker
-                      label={
-                        <>
-                          Date <span style={{ color: "red" }}>*</span>
-                        </>
-                      }
-                      sx={{ width: "350px", marginBottom: "40px" }}
-                      onChange={(newDate) => {
-                        setDate(newDate);
-                        console.log(newDate);
-                      }}
-                      renderInput={(params) => <TextField {...params} />}
-                      value={date}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider> */}
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <DatePicker
+                        label={
+                          <>
+                            Date <span style={{ color: "red" }}>*</span>
+                          </>
+                        }
+                        sx={{ width: "350px", marginBottom: "40px" }}
+                        //   sx={{ width: "400px !important", marginBottom: "40px" }}
+                        onChange={(newDate) => {
+                          setDate(newDate);
+                          console.log(newDate);
+                        }}
+                        renderInput={(params) => <TextField {...params} />}
+                        value={date}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </FormControl>
+                {dateError && (
+                  <div className="date-error-message">{dateError}</div>
+                )}
               </Box>
-
+              <br />
               {/* <LocalizationProvider>
             <DemoContainer components={["DatePicker"]}>
               <DatePicker label="Basic date picker" />
@@ -451,6 +430,7 @@ function TaskManagement() {
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Edit Task
               </Typography>
+              <br />
               <TextField
                 id="outlined-basic"
                 label={
@@ -466,6 +446,9 @@ function TaskManagement() {
                 rows={4}
                 className="textfield-margin"
               />
+              {taskNameError && (
+                <div className="error-message">{taskNameError}</div>
+              )}
               <Box sx={{ minWidth: 120 }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">
@@ -488,6 +471,9 @@ function TaskManagement() {
                     <MenuItem value={2}>Done stage</MenuItem>
                   </Select>
                 </FormControl>
+                {stageError && (
+                  <div className="error-message">{stageError}</div>
+                )}
               </Box>
 
               <Box sx={{ minWidth: 120 }}>
@@ -512,8 +498,38 @@ function TaskManagement() {
                     <MenuItem value={2}>Low</MenuItem>
                   </Select>
                 </FormControl>
+                {priorityError && (
+                  <div className="error-message">{priorityError}</div>
+                )}
               </Box>
 
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <DatePicker
+                        label={
+                          <>
+                            Date <span style={{ color: "red" }}>*</span>
+                          </>
+                        }
+                        sx={{ width: "350px", marginBottom: "40px" }}
+                        //   sx={{ width: "400px !important", marginBottom: "40px" }}
+                        onChange={(newDate) => {
+                          setDate(newDate);
+                          console.log(newDate);
+                        }}
+                        renderInput={(params) => <TextField {...params} />}
+                        value={date}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </FormControl>
+                {dateError && (
+                  <div className="date-error-message">{dateError}</div>
+                )}
+              </Box>
+              <br />
               {/* <LocalizationProvider>
             <DemoContainer components={["DatePicker"]}>
               <DatePicker label="Basic date picker" />
@@ -541,160 +557,32 @@ function TaskManagement() {
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  {task.map((t) => {
-                    return (
-                      <div ref={drag} key={t.id}>
-                        <Container>
-                          <div>
-                            <Box key={t.id}>
-                              <Stepper activeStep={t.activeStep}>
-                                {steps.map((label, index) => (
-                                  <Step key={label}>
-                                    <StepLabel>{label}</StepLabel>
-                                  </Step>
-                                ))}
-                              </Stepper>
-                            </Box>
-                          </div>
-                          <br />
-                          <Box
-                            mb={2}
-                            sx={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" }}
-                          >
-                            <Card>
-                              <CardContent>
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                      flexDirection: "column",
-                                    }}
-                                  >
-                                    <Typography variant="h5" component="div">
-                                      {t.name}
-                                    </Typography>
-                                    <br />
-                                    <br />
-                                    <br />
-                                    <button
-                                      type="submit"
-                                      // className="task-management-button"
-                                      disabled={t.activeStep === 0}
-                                      onClick={() => handleBack(t.id)}
-                                    >
-                                      Back
-                                    </button>
-                                  </Box>
-                                  <Box>
-                                    {/* <h4>
-                                    {activeStep === 0 && "Backlog"}
-                                    {activeStep === 1 && "To Do"}
-                                    {activeStep === 2 && "Ongoing"}
-                                    {activeStep === 3 && "Done"}
-                                  </h4> */}
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "flex-end",
-                                      }}
-                                    >
-                                      <Tooltip title="Delete">
-                                        <IconButton
-                                          sx={{
-                                            "&:hover": {
-                                              backgroundColor:
-                                                "rgba(255, 0, 0, 0.1)",
-                                            },
-                                          }}
-                                        >
-                                          <DeleteIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              color: "red",
-                                            }}
-                                            onClick={() => handleDelete(t.id)}
-                                          />
-                                        </IconButton>
-
-                                        {/* <CalendarMonthIcon /> */}
-                                      </Tooltip>
-                                      <Tooltip
-                                        title={
-                                          date ? date.format("YYYY-MM-DD") : ""
-                                        }
-                                      >
-                                        <IconButton
-                                          sx={{
-                                            "&:hover": {
-                                              backgroundColor:
-                                                "rgba(255, 0, 0, 0.1)",
-                                            },
-                                          }}
-                                        >
-                                          <CalendarMonthIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              color: "blue",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </Tooltip>
-                                      <Tooltip title="Edit">
-                                        <IconButton
-                                          sx={{
-                                            "&:hover": {
-                                              backgroundColor:
-                                                "rgba(255, 0, 0, 0.1)",
-                                            },
-                                          }}
-                                        >
-                                          <EditIcon
-                                            onClick={() => handleModalOpen2(t)}
-                                            style={{
-                                              cursor: "pointer",
-                                              color: "green",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      </Tooltip>
-                                    </Box>
-                                    <br />
-                                    <br />
-                                    <br />
-                                    <button
-                                      type="submit"
-                                      className="task-management-button"
-                                      disabled={t.activeStep === 3}
-                                      onClick={() => handleNext(t.id)}
-                                    >
-                                      Next
-                                    </button>
-                                  </Box>
-                                </Box>
-                              </CardContent>
-                            </Card>
-                          </Box>
-                        </Container>
-                      </div>
-                    );
-                  })}
-
-                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                    <Box sx={{ flex: "1 1 auto" }} />
-                  </Box>
+                  <Task
+                    task={task}
+                    handleBack={handleBack}
+                    handleDelete={handleDelete}
+                    handleModalOpen2={handleModalOpen2}
+                    handleNext={handleNext}
+                    drag={drag}
+                    steps={steps}
+                    date={date}
+                  />
                 </React.Fragment>
               )}
             </div>
           </Box>
+
+          {/* <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          > */}
+          {task.length === 0 && (
+            <h4 style={{ fontSize: "15px" }}> Start by adding a new task</h4>
+          )}
+
           <Box sx={{ textAlign: "end", marginRight: "37px" }}>
             <button
               sx={{ mt: "70px" }}
@@ -704,25 +592,34 @@ function TaskManagement() {
             >
               Add task
             </button>
-            <Tooltip title="Delete">
-              <IconButton
-                sx={{
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 0, 0, 0.1)",
-                  },
-                }}
-              >
-                <DeleteIcon
-                  ref={drop}
-                  style={{
-                    cursor: "pointer",
-                    color: "red",
+            {isDragging && (
+              <Tooltip title="Delete">
+                <IconButton
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 0, 0, 0.1)",
+                    },
                   }}
-                  // onClick={(t) => handleDelete(t.id)}
-                />
-              </IconButton>
-            </Tooltip>
+                >
+                  <DeleteIcon
+                    ref={drop}
+                    style={{
+                      cursor: "pointer",
+                      color: "grey",
+                      fontSize: "100px",
+                      position: "absolute",
+                      top: "50",
+                      // left: "5",
+                      right: "500",
+                      zIndex: "9999999999",
+                    }}
+                    // onClick={(t) => handleDelete(t.id)}
+                  />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
+          {/* </Box> */}
         </Container>
       </Box>
     </div>

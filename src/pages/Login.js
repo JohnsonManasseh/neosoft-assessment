@@ -9,16 +9,26 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loginUser,
+  setName,
+  setPassword,
+  setRecaptcha,
+} from "../store/LoginSlice";
 
 const LoginForm = () => {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  // const [name, setName] = useState("");
+  // const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [nameError, setNameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [recaptchaValue, setRecaptchaValue] = useState("");
   const [recaptchaError, setRecaptchaError] = useState("");
   const [verified, setVerified] = useState(false);
+
+  const dispatch = useDispatch();
+  const { name, password, recaptcha } = useSelector((state) => state.loginForm);
 
   const navigate = useNavigate();
 
@@ -34,10 +44,16 @@ const LoginForm = () => {
   //   navigate("dashboard");
   // };
 
+  // const handleRecaptchaChange = (value) => {
+  //   // setRecaptchaValue(value);
+  //   setRecaptchaError("");
+  //   setVerified(true);
+  // };
+
   const handleRecaptchaChange = (value) => {
-    // setRecaptchaValue(value);
+    dispatch(setRecaptcha(value));
     setRecaptchaError("");
-    setVerified(true);
+    dispatch(setVerified(true));
   };
 
   const handleSubmit = (e) => {
@@ -58,7 +74,11 @@ const LoginForm = () => {
     if (nameError === "" && passwordError === "") {
       setMessage("Registration successful!");
     }
+    // if (name !== "" && password !== "" && verified === true) {
+    //   navigate("dashboard");
+    // }
     if (name !== "" && password !== "" && verified === true) {
+      dispatch(loginUser({ name, password }));
       navigate("dashboard");
     }
   };
@@ -80,7 +100,8 @@ const LoginForm = () => {
             variant="outlined"
             type="email"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            // onChange={(e) => setName(e.target.value)}
+            onChange={(e) => dispatch(setName(e.target.value))}
             sx={{ width: "350px", marginBottom: "40px" }}
             rows={4}
             className="textfield-margin"
@@ -97,7 +118,8 @@ const LoginForm = () => {
               </>
             }
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            // onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => dispatch(setPassword(e.target.value))}
             variant="outlined"
             InputProps={{
               endAdornment: (
@@ -134,6 +156,8 @@ const LoginForm = () => {
             <ReCAPTCHA
               sitekey="6LcAphMnAAAAAAJUXfDSLJZKj4hOD5E4djRONdWR"
               onChange={handleRecaptchaChange}
+              // onChange={(value) => dispatch(setRecaptcha(value))}
+
               // onExpired={() => setRecaptchaValue("")}
             />
           </div>
