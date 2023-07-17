@@ -35,7 +35,7 @@ import Link from "@mui/material/Link";
 import StepLabel from "@mui/material/StepLabel";
 import { useDrag, useDrop } from "react-dnd";
 import { useCallback } from "react";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -324,7 +324,7 @@ function TaskManagement() {
   return (
     <div>
       <Navbar />
-      <Box marginTop="20px">
+      <Box sx={{ ml: "240px", mt: "20px" }}>
         <Container>
           <br />
           <Breadcrumbs
@@ -409,7 +409,7 @@ function TaskManagement() {
                 </FormControl>
               </Box>
               <Box sx={{ minWidth: "120px" }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DatePicker"]}>
                     <DatePicker
                       label={
@@ -426,7 +426,7 @@ function TaskManagement() {
                       value={date}
                     />
                   </DemoContainer>
-                </LocalizationProvider>
+                </LocalizationProvider> */}
               </Box>
 
               {/* <LocalizationProvider>

@@ -57,7 +57,7 @@ function Dashboard() {
   return (
     <div>
       <Navbar />
-      <Box marginTop="20px">
+      <Box sx={{ ml: "240px", mt: "20px" }}>
         <Container>
           {/* <Typography variant="h3" sx={{ color: "  rgba(67, 206, 162, 1)" }}>
             Welcome johnson
@@ -74,7 +74,7 @@ function Dashboard() {
           {/* <h1>dashboard</h1> */}
 
           <br />
-          <h4>Tasks -</h4>
+          <h4 style={{ fontSize: "15px" }}> Tasks -</h4>
           <br />
           <Box sx={{ display: "flex", flexDirection: "row" }}>
             <StyledCard
