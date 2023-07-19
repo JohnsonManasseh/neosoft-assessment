@@ -7,23 +7,23 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import { Button, Drawer } from "@mui/material";
 import { useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import GridViewIcon from "@mui/icons-material/GridView";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
-const drawerWidth = 240;
-
 function Navbar() {
   const navigate = useNavigate();
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setOpenDrawer(!openDrawer);
+  };
 
   const handleLogout = () => {
     navigate("/login");
@@ -63,6 +63,14 @@ function Navbar() {
           }}
         >
           <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+            >
+              <MenuIcon />
+            </IconButton>
             <Typography
               variant="h6"
               component="div"
@@ -75,46 +83,48 @@ function Navbar() {
             </Button>
           </Toolbar>
         </AppBar>
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-              width: drawerWidth,
-              boxSizing: "border-box",
-            },
-            backgroundImage:
-              "linear-gradient(90deg, rgba(24, 90, 157, 1) -8%, rgba(67, 206, 162, 1) 0%, rgba(24, 90, 157, 1) 55%)",
-            bgcolor: "rgba(24, 90, 157, 1)",
-          }}
-        >
-          <Toolbar />
-          <Box sx={{ overflow: "auto" }}>
-            <List>
-              {["Dashboard", "Task management"].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                  <ListItemButton
-                    onClick={
-                      text === "Dashboard"
-                        ? handleDashboardClick
-                        : handleTaskManagementClick
-                    }
-                  >
-                    <ListItemIcon>
-                      {index % 2 === 0 ? (
-                        <GridViewIcon sx={{ color: "rgb(24, 90, 157)" }} />
-                      ) : (
-                        <AssignmentIcon sx={{ color: "rgb(24, 90, 157)" }} />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-        </Drawer>
+        {openDrawer && (
+          <Drawer
+            variant="permanent"
+            sx={{
+              width: 240,
+              flexShrink: 0,
+              [`& .MuiDrawer-paper`]: {
+                width: 240,
+                boxSizing: "border-box",
+              },
+              backgroundImage:
+                "linear-gradient(90deg, rgba(24, 90, 157, 1) -8%, rgba(67, 206, 162, 1) 0%, rgba(24, 90, 157, 1) 55%)",
+              bgcolor: "rgba(24, 90, 157, 1)",
+            }}
+          >
+            <Toolbar />
+            <Box sx={{ overflow: "auto" }}>
+              <List>
+                {["Dashboard", "Task management"].map((text, index) => (
+                  <ListItem key={text} disablePadding>
+                    <ListItemButton
+                      onClick={
+                        text === "Dashboard"
+                          ? handleDashboardClick
+                          : handleTaskManagementClick
+                      }
+                    >
+                      <ListItemIcon>
+                        {index % 2 === 0 ? (
+                          <GridViewIcon sx={{ color: "rgb(24, 90, 157)" }} />
+                        ) : (
+                          <AssignmentIcon sx={{ color: "rgb(24, 90, 157)" }} />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </Drawer>
+        )}
         {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
         </Box> */}

@@ -45,6 +45,8 @@ function Dashboard() {
     navigate("/login");
   };
 
+  const isResponsive = window.innerWidth <= 960;
+
   const breadcrumbs = [
     <Link
       underline="hover"
@@ -60,7 +62,7 @@ function Dashboard() {
   return (
     <div>
       <Navbar />
-      <Box sx={{ ml: "240px", mt: "20px" }}>
+      <Box sx={{ ml: isResponsive ? 0 : "240px", mt: "20px" }}>
         <Container>
           {/* <Typography variant="h3" sx={{ color: "  rgba(67, 206, 162, 1)" }}>
             Welcome johnson
@@ -79,9 +81,22 @@ function Dashboard() {
           <br />
           <h4 style={{ fontSize: "15px" }}> Tasks -</h4>
           <br />
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+
+              justifyContent: isResponsive ? "center" : "none",
+              flexWrap: isResponsive ? "wrap" : "none",
+            }}
+          >
             <StyledCard
-              sx={{ width: 450, marginRight: "20px", textAlign: "center" }}
+              sx={{
+                width: 450,
+                marginRight: "20px",
+                textAlign: "center",
+                marginBottom: "60px",
+              }}
             >
               <CardContent>
                 <Typography variant="h5" component="div">
@@ -93,7 +108,12 @@ function Dashboard() {
             </StyledCard>
 
             <StyledCard
-              sx={{ width: 450, marginRight: "20px", textAlign: "center" }}
+              sx={{
+                width: 450,
+                marginRight: "20px",
+                textAlign: "center",
+                marginBottom: "60px",
+              }}
             >
               <CardContent>
                 <Typography variant="h5" component="div">
@@ -104,7 +124,9 @@ function Dashboard() {
               </CardContent>
             </StyledCard>
 
-            <StyledCard sx={{ width: 450, textAlign: "center" }}>
+            <StyledCard
+              sx={{ width: 450, textAlign: "center", marginBottom: "60px" }}
+            >
               <CardContent>
                 <Typography variant="h5" component="div">
                   Completed

@@ -4,7 +4,14 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
-import { Modal } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Modal,
+} from "@mui/material";
 import { TextField, Grid } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -64,6 +71,8 @@ function TaskManagement() {
   const [stageError, setStageError] = useState("");
   const [priorityError, setPriorityError] = useState("");
   const [dateError, setDateError] = useState("");
+  const [droppedTask, setDroppedTask] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   // const [show, setShow] = useState(false);
   //   const [taskName, setTaskName] = ("")
 
@@ -92,7 +101,7 @@ function TaskManagement() {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: "div",
-      item: { taskId: task.length > 0 ? task[task.length - 1].id : null },
+      item: { taskId: task.length > 0 ? task[task.length - 1].id : null }, // Ensure taskId is set correctly
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
@@ -100,14 +109,43 @@ function TaskManagement() {
     [task]
   );
 
-  const handleDeleteDrop = useCallback((taskId) => {
-    setTask((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-  }, []);
+  // const handleDeleteDrop = useCallback((taskId) => {
+  //   setTask((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  //   setIsConfirmationOpen(true);
+  // }, []);
+
+  const handleDeleteDrop = useCallback(
+    (taskId) => {
+      setIsConfirmationOpen(true);
+      setDroppedTask(task.find((task) => task.id === taskId));
+    },
+    [task]
+  );
+
+  const handleConfirmDelete = () => {
+    console.log("johnson");
+    console.log("hello", droppedTask.id);
+    console.log(task);
+    if (droppedTask) {
+      setTask((prevTasks) =>
+        prevTasks.filter((task) => task.id !== droppedTask)
+      );
+      setIsConfirmationOpen(false);
+      setDroppedTask(null); // Reset droppedTask state here
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmationOpen(false);
+    setDroppedTask(null);
+  };
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "div",
     drop: (item) => {
-      handleDeleteDrop(item.taskId);
+      console.log("Dropped Task ID:", item.taskId); // Log the dropped taskId to console
+      setDroppedTask(task.find((task) => task.id === item.taskId));
+      setIsConfirmationOpen(true);
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -161,7 +199,7 @@ function TaskManagement() {
       console.log("hello", task);
       setName("");
       setPriority("");
-      // setStage("");
+      setStage("");
       // setDate("");
       setOpen(false);
     }
@@ -281,10 +319,35 @@ function TaskManagement() {
 
   const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
 
+  const isResponsive = window.innerWidth <= 960;
+
   return (
     <div>
       <Navbar />
-      <Box sx={{ ml: "240px", mt: "20px" }}>
+      {isConfirmationOpen && (
+        <Dialog
+          open={isConfirmationOpen}
+          onClose={handleCancelDelete}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Delete Task"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Are you sure you want to delete this task?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCancelDelete} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      <Box sx={{ ml: isResponsive ? "0px" : "240px", mt: "20px" }}>
         <Container>
           <br />
           <Breadcrumbs
@@ -571,7 +634,7 @@ function TaskManagement() {
               )}
             </div>
           </Box>
-
+          {/* <div>Put here</div> */}
           {/* <Box
             sx={{
               display: "flex",
