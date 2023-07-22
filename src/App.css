@@ -167,6 +167,19 @@ button:hover {
   color: #185a9d !important;
 }
 
+.dialog-confirm-button {
+  background-color: #185a9d !important;
+  color: white !important;
+  border-radius: 15px !important;
+  text-transform: lowercase !important;
+}
+
+.dialog-cancel-button {
+  background-color: #0eaf94 !important;
+  color: white !important;
+  border-radius: 15px;
+}
+
 .task-management-button {
   background-color: #185a9d !important;
   color: white;

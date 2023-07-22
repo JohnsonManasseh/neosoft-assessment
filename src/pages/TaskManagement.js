@@ -73,18 +73,6 @@ function TaskManagement() {
   const [dateError, setDateError] = useState("");
   const [droppedTask, setDroppedTask] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  // const [show, setShow] = useState(false);
-  //   const [taskName, setTaskName] = ("")
-
-  // const [showDateTooltip, setShowDateTooltip] = useState(false);
-
-  // const handleDateHover = () => {
-  //   setShowDateTooltip(true);
-  // };
-
-  // const handleDateHoverEnd = () => {
-  //   setShowDateTooltip(false);
-  // };
 
   function handleClick(event) {
     event.preventDefault();
@@ -109,11 +97,6 @@ function TaskManagement() {
     [task]
   );
 
-  // const handleDeleteDrop = useCallback((taskId) => {
-  //   setTask((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-  //   setIsConfirmationOpen(true);
-  // }, []);
-
   const handleDeleteDrop = useCallback(
     (taskId) => {
       setIsConfirmationOpen(true);
@@ -123,12 +106,9 @@ function TaskManagement() {
   );
 
   const handleConfirmDelete = () => {
-    console.log("johnson");
-    console.log("hello", droppedTask.id);
-    console.log(task);
     if (droppedTask) {
       setTask((prevTasks) =>
-        prevTasks.filter((task) => task.id !== droppedTask)
+        prevTasks.filter((task) => task.id !== droppedTask.id)
       );
       setIsConfirmationOpen(false);
       setDroppedTask(null); // Reset droppedTask state here
@@ -284,8 +264,6 @@ function TaskManagement() {
     setActiveStep(step);
   };
 
-  //   const navigate = useNavigate();
-
   const handleComplete = () => {
     const newCompleted = completed;
     newCompleted[activeStep] = true;
@@ -326,6 +304,7 @@ function TaskManagement() {
       <Navbar />
       {isConfirmationOpen && (
         <Dialog
+          sx={{ borderRadius: "15px" }}
           open={isConfirmationOpen}
           onClose={handleCancelDelete}
           aria-labelledby="alert-dialog-title"
@@ -338,10 +317,31 @@ function TaskManagement() {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCancelDelete} color="primary">
+            <Button
+              sx={{
+                backgroundColor: "#0eaf94",
+                color: "white",
+                borderRadius: "15px",
+                "&:hover": {
+                  backgroundColor: "#0eaf94b0",
+                },
+              }}
+              onClick={handleCancelDelete}
+            >
               Cancel
             </Button>
-            <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+            <Button
+              onClick={handleConfirmDelete}
+              sx={{
+                backgroundColor: "#185a9d",
+                color: "white",
+                borderRadius: "15px",
+                "&:hover": {
+                  backgroundColor: "#134272",
+                },
+              }}
+              autoFocus
+            >
               Confirm
             </Button>
           </DialogActions>
@@ -593,11 +593,6 @@ function TaskManagement() {
                 )}
               </Box>
               <br />
-              {/* <LocalizationProvider>
-            <DemoContainer components={["DatePicker"]}>
-              <DatePicker label="Basic date picker" />
-            </DemoContainer>
-          </LocalizationProvider> */}
               <button onClick={editCard} type="submit">
                 Edit
               </button>
