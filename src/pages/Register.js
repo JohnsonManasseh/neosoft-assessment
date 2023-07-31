@@ -113,7 +113,7 @@ const RegisterForm = () => {
                 sx={{ width: "350px", marginBottom: "40px" }}
                 rows={4}
                 className="textfield-margin"
-                error="johnson"
+                // error="johnson"
               />
 
               {nameError && <div className="error-message">{nameError}</div>}
