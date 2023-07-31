@@ -32,6 +32,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Task from "../components/Task";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const style = {
   position: "absolute",
@@ -71,8 +72,31 @@ function TaskManagement() {
   const [stageError, setStageError] = useState("");
   const [priorityError, setPriorityError] = useState("");
   const [dateError, setDateError] = useState("");
-  const [droppedTask, setDroppedTask] = useState(false);
+  // const [droppedTask, setDroppedTask] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
+  const [droppedTask, setDroppedTask] = useState(null); // State to hold the dropped task
+
+  const handleOnDragEnd = (result) => {
+    if (!result.destination) {
+      // If the task was not dropped into a valid droppable area, return
+      return;
+    }
+
+    // Get the task that was dragged
+    const draggedTask = task[result.source.index];
+
+    // If the task was dropped into the second box, update the droppedTask state
+    if (result.destination.droppableId === "box-droppable") {
+      setDroppedTask(draggedTask);
+    }
+
+    // Update the order of tasks if they were re-ordered in the first box
+    const items = Array.from(task);
+    items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, draggedTask);
+    setTask(items);
+  };
 
   function handleClick(event) {
     event.preventDefault();
@@ -299,79 +323,208 @@ function TaskManagement() {
 
   const isResponsive = window.innerWidth <= 960;
 
-  return (
-    <div>
-      <Navbar />
-      {isConfirmationOpen && (
-        <Dialog
-          sx={{ borderRadius: "15px" }}
-          open={isConfirmationOpen}
-          onClose={handleCancelDelete}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{"Delete Task"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete this task?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              sx={{
-                backgroundColor: "#0eaf94",
-                color: "white",
-                borderRadius: "15px",
-                "&:hover": {
-                  backgroundColor: "#0eaf94b0",
-                },
-              }}
-              onClick={handleCancelDelete}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleConfirmDelete}
-              sx={{
-                backgroundColor: "#185a9d",
-                color: "white",
-                borderRadius: "15px",
-                "&:hover": {
-                  backgroundColor: "#134272",
-                },
-              }}
-              autoFocus
-            >
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-      <Box sx={{ ml: isResponsive ? "0px" : "240px", mt: "20px" }}>
-        <Container>
-          <br />
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-          >
-            {breadcrumbs}
-          </Breadcrumbs>
-          <br />
-          <br />
-          <br />
+  // const handleOnDragEnd = (result) => {
+  //   if (!result) {
+  //     return;
+  //   }
+  // };
 
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+  return (
+    <DragDropContext onDragEnd={handleOnDragEnd}>
+      <div>
+        <Navbar />
+        {isConfirmationOpen && (
+          <Dialog
+            sx={{ borderRadius: "15px" }}
+            open={isConfirmationOpen}
+            onClose={handleCancelDelete}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
           >
-            <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Create Task
-              </Typography>
-              <br />
-              <Box sx={{ minWidth: 120 }}>
+            <DialogTitle id="alert-dialog-title">{"Delete Task"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure you want to delete this task?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                sx={{
+                  backgroundColor: "#0eaf94",
+                  color: "white",
+                  borderRadius: "15px",
+                  "&:hover": {
+                    backgroundColor: "#0eaf94b0",
+                  },
+                }}
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmDelete}
+                sx={{
+                  backgroundColor: "#185a9d",
+                  color: "white",
+                  borderRadius: "15px",
+                  "&:hover": {
+                    backgroundColor: "#134272",
+                  },
+                }}
+                autoFocus
+              >
+                Confirm
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
+        <Box sx={{ ml: isResponsive ? "0px" : "240px", mt: "20px" }}>
+          <Container>
+            <br />
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
+              {breadcrumbs}
+            </Breadcrumbs>
+            <br />
+            <br />
+            <br />
+
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Create Task
+                </Typography>
+                <br />
+                <Box sx={{ minWidth: 120 }}>
+                  <TextField
+                    id="outlined-basic"
+                    label={
+                      <>
+                        Task name <span style={{ color: "red" }}>*</span>
+                      </>
+                    }
+                    variant="outlined"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    sx={{ width: "350px", marginBottom: "40px" }}
+                    rows={4}
+                    className="textfield-margin"
+                  />
+                  {taskNameError && (
+                    <div className="error-message">{taskNameError}</div>
+                  )}
+                </Box>
+                <Box sx={{ minWidth: 120 }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Stage <span style={{ color: "red" }}>*</span>
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={stage}
+                      label={
+                        <>
+                          Stage <span style={{ color: "red" }}>*</span>
+                        </>
+                      }
+                      onChange={(e) => setStage(e.target.value)}
+                      sx={{ width: "350px", marginBottom: "40px" }}
+                    >
+                      <MenuItem value={0}>Backlog stage</MenuItem>
+                      <MenuItem value={1}>To Do stage</MenuItem>
+                      <MenuItem value={2}>Done stage</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {stageError && (
+                    <div className="error-message">{stageError}</div>
+                  )}
+                </Box>
+
+                <Box sx={{ minWidth: 120 }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Priority <span style={{ color: "red" }}>*</span>
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={priority}
+                      label={
+                        <>
+                          Stage <span style={{ color: "red" }}>*</span>
+                        </>
+                      }
+                      onChange={(e) => setPriority(e.target.value)}
+                      sx={{ width: "350px", marginBottom: "40px" }}
+                    >
+                      <MenuItem value={0}>High</MenuItem>
+                      <MenuItem value={1}>Medium</MenuItem>
+                      <MenuItem value={2}>Low</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {priorityError && (
+                    <div className="error-message">{priorityError}</div>
+                  )}
+                </Box>
+                <Box sx={{ minWidth: 120 }}>
+                  <FormControl fullWidth>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={["DatePicker"]}>
+                        <DatePicker
+                          label={
+                            <>
+                              Date <span style={{ color: "red" }}>*</span>
+                            </>
+                          }
+                          sx={{ width: "350px", marginBottom: "40px" }}
+                          //   sx={{ width: "400px !important", marginBottom: "40px" }}
+                          onChange={(newDate) => {
+                            setDate(newDate);
+                            console.log(newDate);
+                          }}
+                          renderInput={(params) => <TextField {...params} />}
+                          value={date}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </FormControl>
+                  {dateError && (
+                    <div className="date-error-message">{dateError}</div>
+                  )}
+                </Box>
+                <br />
+                {/* <LocalizationProvider>
+            <DemoContainer components={["DatePicker"]}>
+              <DatePicker label="Basic date picker" />
+            </DemoContainer>
+          </LocalizationProvider> */}
+                <button onClick={addCard} type="submit">
+                  Add
+                </button>
+              </Box>
+            </Modal>
+            {/* edit modal */}
+
+            <Modal
+              open={open2}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Edit Task
+                </Typography>
+                <br />
                 <TextField
                   id="outlined-basic"
                   label={
@@ -390,297 +543,257 @@ function TaskManagement() {
                 {taskNameError && (
                   <div className="error-message">{taskNameError}</div>
                 )}
-              </Box>
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Stage <span style={{ color: "red" }}>*</span>
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={stage}
-                    label={
-                      <>
-                        Stage <span style={{ color: "red" }}>*</span>
-                      </>
-                    }
-                    onChange={(e) => setStage(e.target.value)}
-                    sx={{ width: "350px", marginBottom: "40px" }}
-                  >
-                    <MenuItem value={0}>Backlog stage</MenuItem>
-                    <MenuItem value={1}>To Do stage</MenuItem>
-                    <MenuItem value={2}>Done stage</MenuItem>
-                  </Select>
-                </FormControl>
-                {stageError && (
-                  <div className="error-message">{stageError}</div>
-                )}
-              </Box>
+                <Box sx={{ minWidth: 120 }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Stage <span style={{ color: "red" }}>*</span>
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={stage}
+                      label={
+                        <>
+                          Stage <span style={{ color: "red" }}>*</span>
+                        </>
+                      }
+                      onChange={(e) => setStage(e.target.value)}
+                      sx={{ width: "350px", marginBottom: "40px" }}
+                    >
+                      <MenuItem value={0}>Backlog stage</MenuItem>
+                      <MenuItem value={1}>To Do stage</MenuItem>
+                      <MenuItem value={2}>Done stage</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {stageError && (
+                    <div className="error-message">{stageError}</div>
+                  )}
+                </Box>
 
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Priority <span style={{ color: "red" }}>*</span>
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={priority}
-                    label={
-                      <>
-                        Stage <span style={{ color: "red" }}>*</span>
-                      </>
-                    }
-                    onChange={(e) => setPriority(e.target.value)}
-                    sx={{ width: "350px", marginBottom: "40px" }}
-                  >
-                    <MenuItem value={0}>High</MenuItem>
-                    <MenuItem value={1}>Medium</MenuItem>
-                    <MenuItem value={2}>Low</MenuItem>
-                  </Select>
-                </FormControl>
-                {priorityError && (
-                  <div className="error-message">{priorityError}</div>
-                )}
+                <Box sx={{ minWidth: 120 }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Priority <span style={{ color: "red" }}>*</span>
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={priority}
+                      label={
+                        <>
+                          Stage <span style={{ color: "red" }}>*</span>
+                        </>
+                      }
+                      onChange={(e) => setPriority(e.target.value)}
+                      sx={{ width: "350px", marginBottom: "40px" }}
+                    >
+                      <MenuItem value={0}>High</MenuItem>
+                      <MenuItem value={1}>Medium</MenuItem>
+                      <MenuItem value={2}>Low</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {priorityError && (
+                    <div className="error-message">{priorityError}</div>
+                  )}
+                </Box>
+
+                <Box sx={{ minWidth: 120 }}>
+                  <FormControl fullWidth>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={["DatePicker"]}>
+                        <DatePicker
+                          label={
+                            <>
+                              Date <span style={{ color: "red" }}>*</span>
+                            </>
+                          }
+                          sx={{ width: "350px", marginBottom: "40px" }}
+                          //   sx={{ width: "400px !important", marginBottom: "40px" }}
+                          onChange={(newDate) => {
+                            setDate(newDate);
+                            console.log(newDate);
+                          }}
+                          renderInput={(params) => <TextField {...params} />}
+                          value={date}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </FormControl>
+                  {dateError && (
+                    <div className="date-error-message">{dateError}</div>
+                  )}
+                </Box>
+                <br />
+                <button onClick={editCard} type="submit">
+                  Edit
+                </button>
               </Box>
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["DatePicker"]}>
-                      <DatePicker
-                        label={
-                          <>
-                            Date <span style={{ color: "red" }}>*</span>
-                          </>
-                        }
-                        sx={{ width: "350px", marginBottom: "40px" }}
-                        //   sx={{ width: "400px !important", marginBottom: "40px" }}
-                        onChange={(newDate) => {
-                          setDate(newDate);
-                          console.log(newDate);
-                        }}
-                        renderInput={(params) => <TextField {...params} />}
-                        value={date}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
-                </FormControl>
-                {dateError && (
-                  <div className="date-error-message">{dateError}</div>
+            </Modal>
+
+            {/* edit modal end */}
+            <Box sx={{ width: "100%" }}>
+              <Container></Container>
+              <div>
+                {allStepsCompleted() ? (
+                  <React.Fragment>
+                    <Typography sx={{ mt: 2, mb: 1 }}>
+                      All steps completed - you&apos;re finished
+                    </Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      <Button onClick={() => handleReset(task.id)}>
+                        Reset
+                      </Button>
+                    </Box>
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "300px",
+                        height: "300px",
+                        border: "1px solid #ccc",
+                        borderRadius: "8px",
+                        margin: "20px",
+                        background: "#f9f9f9",
+                      }}
+                    >
+                      <Droppable droppableId="task-list" direction="horizontal">
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                          >
+                            {task.map((t, index) => (
+                              <Draggable
+                                key={t.name}
+                                draggableId={t.name}
+                                index={index}
+                              >
+                                {(provided) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                  >
+                                    <Task
+                                      t={t}
+                                      handleBack={handleBack}
+                                      handleDelete={handleDelete}
+                                      handleModalOpen2={handleModalOpen2}
+                                      handleNext={handleNext}
+                                      drag={drag}
+                                      steps={steps}
+                                      date={date}
+                                    />
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </Box>
+                  </React.Fragment>
                 )}
-              </Box>
-              <br />
-              {/* <LocalizationProvider>
-            <DemoContainer components={["DatePicker"]}>
-              <DatePicker label="Basic date picker" />
-            </DemoContainer>
-          </LocalizationProvider> */}
-              <button onClick={addCard} type="submit">
-                Add
-              </button>
+              </div>
             </Box>
-          </Modal>
-          {/* edit modal */}
 
-          <Modal
-            open={open2}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Edit Task
-              </Typography>
-              <br />
-              <TextField
-                id="outlined-basic"
-                label={
-                  <>
-                    Task name <span style={{ color: "red" }}>*</span>
-                  </>
-                }
-                variant="outlined"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                sx={{ width: "350px", marginBottom: "40px" }}
-                rows={4}
-                className="textfield-margin"
-              />
-              {taskNameError && (
-                <div className="error-message">{taskNameError}</div>
-              )}
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Stage <span style={{ color: "red" }}>*</span>
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={stage}
-                    label={
-                      <>
-                        Stage <span style={{ color: "red" }}>*</span>
-                      </>
-                    }
-                    onChange={(e) => setStage(e.target.value)}
-                    sx={{ width: "350px", marginBottom: "40px" }}
-                  >
-                    <MenuItem value={0}>Backlog stage</MenuItem>
-                    <MenuItem value={1}>To Do stage</MenuItem>
-                    <MenuItem value={2}>Done stage</MenuItem>
-                  </Select>
-                </FormControl>
-                {stageError && (
-                  <div className="error-message">{stageError}</div>
-                )}
-              </Box>
-
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Priority <span style={{ color: "red" }}>*</span>
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={priority}
-                    label={
-                      <>
-                        Stage <span style={{ color: "red" }}>*</span>
-                      </>
-                    }
-                    onChange={(e) => setPriority(e.target.value)}
-                    sx={{ width: "350px", marginBottom: "40px" }}
-                  >
-                    <MenuItem value={0}>High</MenuItem>
-                    <MenuItem value={1}>Medium</MenuItem>
-                    <MenuItem value={2}>Low</MenuItem>
-                  </Select>
-                </FormControl>
-                {priorityError && (
-                  <div className="error-message">{priorityError}</div>
-                )}
-              </Box>
-
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["DatePicker"]}>
-                      <DatePicker
-                        label={
-                          <>
-                            Date <span style={{ color: "red" }}>*</span>
-                          </>
-                        }
-                        sx={{ width: "350px", marginBottom: "40px" }}
-                        //   sx={{ width: "400px !important", marginBottom: "40px" }}
-                        onChange={(newDate) => {
-                          setDate(newDate);
-                          console.log(newDate);
-                        }}
-                        renderInput={(params) => <TextField {...params} />}
-                        value={date}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
-                </FormControl>
-                {dateError && (
-                  <div className="date-error-message">{dateError}</div>
-                )}
-              </Box>
-              <br />
-              <button onClick={editCard} type="submit">
-                Edit
-              </button>
-            </Box>
-          </Modal>
-
-          {/* edit modal end */}
-          <Box sx={{ width: "100%" }}>
-            <Container></Container>
-            <div>
-              {allStepsCompleted() ? (
-                <React.Fragment>
-                  <Typography sx={{ mt: 2, mb: 1 }}>
-                    All steps completed - you&apos;re finished
-                  </Typography>
-                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                    <Box sx={{ flex: "1 1 auto" }} />
-                    <Button onClick={() => handleReset(task.id)}>Reset</Button>
-                  </Box>
-                </React.Fragment>
-              ) : (
-                <React.Fragment>
-                  <Task
-                    task={task}
-                    handleBack={handleBack}
-                    handleDelete={handleDelete}
-                    handleModalOpen2={handleModalOpen2}
-                    handleNext={handleNext}
-                    drag={drag}
-                    steps={steps}
-                    date={date}
-                  />
-                </React.Fragment>
-              )}
-            </div>
-          </Box>
-          {/* <div>Put here</div> */}
-          {/* <Box
+            {/* <div>Put here</div> */}
+            {/* <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           > */}
-          {task.length === 0 && (
-            <h4 style={{ fontSize: "15px" }}> Start by adding a new task</h4>
-          )}
-
-          <Box sx={{ textAlign: "end", marginRight: "37px" }}>
-            <button
-              sx={{ mt: "70px" }}
-              className="task-management-button"
-              type="submit"
-              onClick={handleModalOpen}
-            >
-              Add task
-            </button>
-            {isDragging && (
-              <Tooltip title="Delete">
-                <IconButton
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 0, 0, 0.1)",
-                    },
-                  }}
-                >
-                  <DeleteIcon
-                    ref={drop}
-                    style={{
-                      cursor: "pointer",
-                      color: "grey",
-                      fontSize: "100px",
-                      position: "absolute",
-                      top: "50",
-                      // left: "5",
-                      right: "500",
-                      zIndex: "9999999999",
-                    }}
-                    // onClick={(t) => handleDelete(t.id)}
-                  />
-                </IconButton>
-              </Tooltip>
+            {task.length === 0 && (
+              <h4 style={{ fontSize: "15px" }}> Start by adding a new task</h4>
             )}
-          </Box>
-          {/* </Box> */}
-        </Container>
-      </Box>
-    </div>
+
+            <Droppable droppableId="box-droppable">
+              {(provided) => (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "300px",
+                    height: "300px",
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    margin: "20px",
+                    background: "#f9f9f9",
+                  }}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {droppedTask && (
+                    // Render the dropped task content here
+                    <div>
+                      {/* Render the dropped task content here */}
+                      <h3>{droppedTask.name}</h3>
+                      <p>Priority: {droppedTask.priority}</p>
+                      <p>Stage: {droppedTask.stage}</p>
+                      <p>Date: {droppedTask.date}</p>
+                    </div>
+                  )}
+                  {/* Render the box contents here */}
+                  {/* For example, you can render a message */}
+                  {task.length === 0 && (
+                    <h4 style={{ fontSize: "15px" }}>
+                      Start by adding a new task
+                    </h4>
+                  )}
+                </Box>
+              )}
+            </Droppable>
+
+            <Box sx={{ textAlign: "end", marginRight: "37px" }}>
+              <button
+                sx={{ mt: "70px" }}
+                className="task-management-button"
+                type="submit"
+                onClick={handleModalOpen}
+              >
+                Add task
+              </button>
+              {isDragging && (
+                <Tooltip title="Delete">
+                  <IconButton
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 0, 0, 0.1)",
+                      },
+                    }}
+                  >
+                    <DeleteIcon
+                      ref={drop}
+                      style={{
+                        cursor: "pointer",
+                        color: "grey",
+                        fontSize: "100px",
+                        position: "absolute",
+                        top: "50",
+                        // left: "5",
+                        right: "500",
+                        zIndex: "9999999999",
+                      }}
+                      // onClick={(t) => handleDelete(t.id)}
+                    />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Box>
+            {/* </Box> */}
+          </Container>
+        </Box>
+      </div>
+    </DragDropContext>
   );
 }
 

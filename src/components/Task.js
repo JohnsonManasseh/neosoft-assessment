@@ -13,7 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import StepLabel from "@mui/material/StepLabel";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 function Task({
-  task,
+  t,
   handleBack,
   handleDelete,
   handleModalOpen2,
@@ -21,144 +21,144 @@ function Task({
   drag,
   steps,
   date,
+  taskRefProp,
+  taskDraggableProp,
+  taskDragHandleProp,
 }) {
   return (
-    <div>
-      {task.map((t) => {
-        const isBackDisabled = t.activeStep === 0;
+    <div {...taskDraggableProp} {...taskDragHandleProp} ref={taskRefProp}>
+      {/* {task.map((t) => { */}
+      {/* const isBackDisabled = t.activeStep === 0; return ( */}
 
-        return (
-          <div ref={drag} key={t.id}>
-            <Container>
-              <div>
-                <Box key={t.id}>
-                  <Stepper activeStep={t.activeStep}>
-                    {steps.map((label, index) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </Box>
-              </div>
-              <br />
-              <Box mb={2} sx={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" }}>
-                <Card>
-                  <CardContent>
+      <div ref={drag} key={t.id}>
+        <Container>
+          <div>
+            <Box key={t.id}>
+              <Stepper activeStep={t.activeStep}>
+                {steps.map((label, index) => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Box>
+          </div>
+          <br />
+          <Box mb={2} sx={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)" }}>
+            <Card>
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Typography variant="h5" component="div">
+                      {t.name}
+                    </Typography>
+                    <br />
+                    <br />
+                    <br />
+                    <button
+                      type="submit"
+                      //   className=""
+                      // disabled={isBackDisabled}
+                      //   disabled
+                      onClick={() => handleBack(t.id)}
+                    >
+                      Back
+                    </button>
+                  </Box>
+                  <Box>
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "space-between",
                         alignItems: "center",
+                        justifyContent: "flex-end",
                       }}
                     >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <Typography variant="h5" component="div">
-                          {t.name}
-                        </Typography>
-                        <br />
-                        <br />
-                        <br />
-                        <button
-                          type="submit"
-                          //   className=""
-                          disabled={isBackDisabled}
-                          //   disabled
-                          onClick={() => handleBack(t.id)}
-                        >
-                          Back
-                        </button>
-                      </Box>
-                      <Box>
-                        <Box
+                      <Tooltip title="Delete">
+                        <IconButton
                           sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "flex-end",
+                            "&:hover": {
+                              backgroundColor: "#0eaf9444",
+                            },
                           }}
                         >
-                          <Tooltip title="Delete">
-                            <IconButton
-                              sx={{
-                                "&:hover": {
-                                  backgroundColor: "#0eaf9444",
-                                },
-                              }}
-                            >
-                              <DeleteIcon
-                                style={{
-                                  cursor: "pointer",
-                                  color: "red",
-                                }}
-                                onClick={() => handleDelete(t.id)}
-                              />
-                            </IconButton>
+                          <DeleteIcon
+                            style={{
+                              cursor: "pointer",
+                              color: "red",
+                            }}
+                            onClick={() => handleDelete(t.id)}
+                          />
+                        </IconButton>
 
-                            {/* <CalendarMonthIcon /> */}
-                          </Tooltip>
-                          <Tooltip
-                            title={date ? date.format("YYYY-MM-DD") : ""}
-                          >
-                            <IconButton
-                              sx={{
-                                "&:hover": {
-                                  backgroundColor: "#0eaf9444",
-                                },
-                              }}
-                            >
-                              <CalendarMonthIcon
-                                style={{
-                                  cursor: "pointer",
-                                  color: "blue",
-                                }}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Edit">
-                            <IconButton
-                              sx={{
-                                "&:hover": {
-                                  backgroundColor: "#0eaf9444",
-                                },
-                              }}
-                            >
-                              <EditIcon
-                                onClick={() => handleModalOpen2(t)}
-                                style={{
-                                  cursor: "pointer",
-                                  color: "green",
-                                }}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                        <br />
-                        <br />
-                        <br />
-                        <button
-                          type="submit"
-                          className="task-management-button"
-                          disabled={t.activeStep === 3}
-                          onClick={() => handleNext(t.id)}
+                        {/* <CalendarMonthIcon /> */}
+                      </Tooltip>
+                      <Tooltip title={date ? date.format("YYYY-MM-DD") : ""}>
+                        <IconButton
+                          sx={{
+                            "&:hover": {
+                              backgroundColor: "#0eaf9444",
+                            },
+                          }}
                         >
-                          Next
-                        </button>
-                      </Box>
+                          <CalendarMonthIcon
+                            style={{
+                              cursor: "pointer",
+                              color: "blue",
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit">
+                        <IconButton
+                          sx={{
+                            "&:hover": {
+                              backgroundColor: "#0eaf9444",
+                            },
+                          }}
+                        >
+                          <EditIcon
+                            onClick={() => handleModalOpen2(t)}
+                            style={{
+                              cursor: "pointer",
+                              color: "green",
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
                     </Box>
-                  </CardContent>
-                </Card>
-              </Box>
-            </Container>
-          </div>
-        );
-      })}
+                    <br />
+                    <br />
+                    <br />
+                    <button
+                      type="submit"
+                      className="task-management-button"
+                      disabled={t.activeStep === 3}
+                      onClick={() => handleNext(t.id)}
+                    >
+                      Next
+                    </button>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+        </Container>
+      </div>
+      {/* ); */}
+      {/* })} */}
     </div>
   );
 }
