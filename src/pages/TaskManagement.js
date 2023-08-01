@@ -76,6 +76,7 @@ function TaskManagement() {
   const [dateError, setDateError] = useState("");
   // const [droppedTask, setDroppedTask] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
   const [droppedTask, setDroppedTask] = useState(null); // State to hold the dropped task
 
@@ -89,6 +90,13 @@ function TaskManagement() {
     );
   };
 
+  // const handleOnDragStart = (result) => {
+  //   if (!result) {
+  //     return;
+  //   }
+  //   setShowDelete(true);
+  // };
+
   const handleOnDragEnd = (result) => {
     if (!result.destination) {
       // If the task was not dropped into a valid droppable area, return
@@ -100,30 +108,35 @@ function TaskManagement() {
       result.destination.droppableId.split("-")[2]
     );
 
-    // If the task was dropped into a different stage, move the task to the new stage
+    // If the task was dropped on the delete area, open the confirmation modal
+    if (result.destination.droppableId === "delete-area") {
+      const taskToDelete = task[result.source.index];
+      setDroppedTask(taskToDelete);
+      setIsConfirmationOpen(true);
+      return;
+    }
+
+    // Handle task movement between stages
     if (sourceStageIndex !== destinationStageIndex) {
       const updatedTask = {
         ...task[result.source.index],
         stage: destinationStageIndex,
       };
 
-      // Remove the task from the source stage
       const updatedTaskList = task.filter(
         (t, index) => index !== result.source.index
       );
-
-      // Insert the task into the destination stage
       updatedTaskList.splice(result.destination.index, 0, updatedTask);
 
       setTask(updatedTaskList);
     } else {
-      // If the task was re-ordered within the same stage, update the order of tasks
       const items = Array.from(task);
       const draggedTask = items[result.source.index];
       items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, draggedTask);
       setTask(items);
     }
+    setShowDelete(false);
   };
 
   // const handleOnDragEnd = (result) => {
@@ -363,7 +376,10 @@ function TaskManagement() {
   // };
 
   return (
-    <DragDropContext onDragEnd={handleOnDragEnd}>
+    <DragDropContext
+      onDragEnd={handleOnDragEnd}
+      // onDragStart={handleOnDragStart}
+    >
       <div>
         <Navbar />
         {isConfirmationOpen && (
@@ -749,7 +765,47 @@ function TaskManagement() {
             {/* {task.length === 0 && (
               <h4 style={{ fontSize: "15px" }}>Start by adding a new task</h4>
             )} */}
-
+            {/* <Tooltip title="Delete">
+              <IconButton
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                  },
+                }}
+              >
+                <DeleteIcon
+                // ref={drop}
+                // style={{
+                //   cursor: "pointer",
+                //   color: "grey",
+                //   fontSize: "100px",
+                //   position: "absolute",
+                //   top: "50",
+                //   // left: "5",
+                //   right: "500",
+                //   zIndex: "9999999999",
+                // }}
+                // onClick={(t) => handleDelete(t.id)}
+                />
+              </IconButton>
+            </Tooltip> */}
+            {/* {showDelete && ( */}
+            <Droppable droppableId="delete-area">
+              {(provided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
+                  {/* Render the delete icon here */}
+                  <IconButton>
+                    <DeleteIcon
+                      sx={{
+                        fontSize: "50px",
+                      }}
+                    />
+                  </IconButton>
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+            {/* )} */}
             <Box sx={{ textAlign: "end", marginRight: "37px", mt: "70px" }}>
               <button
                 sx={{ mt: "70px" }}
