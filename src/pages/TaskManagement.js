@@ -515,9 +515,9 @@ function TaskManagement() {
                       onChange={(e) => setPriority(e.target.value)}
                       sx={{ width: "350px", marginBottom: "40px" }}
                     >
-                      <MenuItem value={0}>High</MenuItem>
-                      <MenuItem value={1}>Medium</MenuItem>
-                      <MenuItem value={2}>Low</MenuItem>
+                      <MenuItem value="high">High</MenuItem>
+                      <MenuItem value="medium">Medium</MenuItem>
+                      <MenuItem value="low">Low</MenuItem>
                     </Select>
                   </FormControl>
                   {priorityError && (
@@ -798,6 +798,13 @@ function TaskManagement() {
                     <DeleteIcon
                       sx={{
                         fontSize: "50px",
+                        cursor: "pointer",
+                        color: "grey",
+                        position: "absolute",
+                        top: "480px",
+                        // left: "5",
+                        left: "500px",
+                        zIndex: "9999999999",
                       }}
                     />
                   </IconButton>

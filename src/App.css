@@ -219,7 +219,16 @@ button:hover {
   /* margin-top: -17px; */
   font-size: 13px;
   position: absolute;
-  margin-top: -37px;
+  margin-top: -50px;
+  /* padding-bottom: 10px; */
+}
+.captcha-error-message {
+  color: red;
+  /* margin-top: -17px; */
+  font-size: 13px;
+  position: absolute;
+  margin-top: -21px;
+  margin-left: 30px;
   /* padding-bottom: 10px; */
 }
 .textfield-margin {

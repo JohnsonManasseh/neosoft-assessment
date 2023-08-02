@@ -14,6 +14,7 @@ import StepLabel from "@mui/material/StepLabel";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
+import FlagIcon from "@mui/icons-material/Flag";
 
 import { totalStages } from "../assets/constants/constants";
 function Task({
@@ -28,6 +29,7 @@ function Task({
   taskRefProp,
   taskDraggableProp,
   taskDragHandleProp,
+  priority,
 }) {
   const isBackDisabled = t.stage === 0; // Disable left arrow if it's the first stage
   const isNextDisabled = t.stage === 3;
@@ -126,7 +128,67 @@ function Task({
                         justifyContent: "flex-end",
                       }}
                     >
-                      <Tooltip title="Delete">
+                      <Tooltip title={t.priority} placement="top">
+                        <IconButton
+                          sx={{
+                            "&:hover": {
+                              backgroundColor: "#0eaf9444",
+                            },
+                          }}
+                        >
+                          <FlagIcon
+                            style={{
+                              cursor: "pointer",
+                              color:
+                                t.priority === "high"
+                                  ? "red"
+                                  : t.priority === "medium"
+                                  ? "orange"
+                                  : t.priority === "low"
+                                  ? "green"
+                                  : "black",
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip
+                        title={date ? date.format("YYYY-MM-DD") : ""}
+                        placement="top"
+                      >
+                        <IconButton
+                          sx={{
+                            "&:hover": {
+                              backgroundColor: "#0eaf9444",
+                            },
+                          }}
+                        >
+                          <CalendarMonthIcon
+                            style={{
+                              cursor: "pointer",
+                              color: "blue",
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit" placement="top">
+                        <IconButton
+                          sx={{
+                            "&:hover": {
+                              backgroundColor: "#0eaf9444",
+                            },
+                          }}
+                        >
+                          <EditIcon
+                            onClick={() => handleModalOpen2(t)}
+                            style={{
+                              cursor: "pointer",
+                              color: "green",
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete" placement="top">
                         <IconButton
                           sx={{
                             "&:hover": {
@@ -144,39 +206,6 @@ function Task({
                         </IconButton>
 
                         {/* <CalendarMonthIcon /> */}
-                      </Tooltip>
-                      <Tooltip title={date ? date.format("YYYY-MM-DD") : ""}>
-                        <IconButton
-                          sx={{
-                            "&:hover": {
-                              backgroundColor: "#0eaf9444",
-                            },
-                          }}
-                        >
-                          <CalendarMonthIcon
-                            style={{
-                              cursor: "pointer",
-                              color: "blue",
-                            }}
-                          />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Edit">
-                        <IconButton
-                          sx={{
-                            "&:hover": {
-                              backgroundColor: "#0eaf9444",
-                            },
-                          }}
-                        >
-                          <EditIcon
-                            onClick={() => handleModalOpen2(t)}
-                            style={{
-                              cursor: "pointer",
-                              color: "green",
-                            }}
-                          />
-                        </IconButton>
                       </Tooltip>
                     </Box>
                     <Box
