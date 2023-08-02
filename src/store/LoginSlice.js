@@ -26,9 +26,12 @@ const loginFormSlice = createSlice({
     setRecaptcha: (state, action) => {
       state.recaptcha = action.payload;
     },
+    logout: (state, action) => {
+      state.isLoggedIn = false;
+    },
   },
 });
 
-export const { loginUser, setName, setPassword, setRecaptcha } =
+export const { loginUser, setName, setPassword, setRecaptcha, logout } =
   loginFormSlice.actions;
 export default loginFormSlice.reducer;

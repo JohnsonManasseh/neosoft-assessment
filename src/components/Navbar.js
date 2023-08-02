@@ -16,17 +16,20 @@ import { useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import GridViewIcon from "@mui/icons-material/GridView";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import { useDispatch } from "react-redux";
 
 function Navbar() {
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const dispatch = useDispatch();
 
   const handleDrawerToggle = () => {
     setOpenDrawer(!openDrawer);
   };
 
   const handleLogout = () => {
-    localStorage.setItem("login", false);
+    // localStorage.setItem("login", false);
+    dispatch({ type: "logout" });
     navigate("/login");
   };
 

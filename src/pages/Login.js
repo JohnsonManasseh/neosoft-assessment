@@ -50,7 +50,7 @@ const LoginForm = () => {
 
   // useEffect(() => {
   //   let login = localStorage.getItem("login");
-  //   if (!login) {
+  //   if (login) {
   //     navigate("/login");
   //   }
   // }, []);
@@ -59,7 +59,6 @@ const LoginForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // localStorage.setItem("login", true);
     // const navigate = useNavigate();
 
     // Reset previous error messages
@@ -85,6 +84,8 @@ const LoginForm = () => {
       // Perform login action (e.g., dispatching an action to Redux store)
       dispatch(loginUser({ name, password }));
       // Navigate to dashboard after successful login
+
+      // localStorage.setItem("login", true);
       navigate("dashboard");
     }
   };

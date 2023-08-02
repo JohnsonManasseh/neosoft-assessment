@@ -19,17 +19,27 @@ const App = () => {
         <div>
           <Routes>
             <Route path="/" element={<RegisterForm />} />
-            <Route path="login" element={<LoginForm />} />
+            <Route path="/login" element={<LoginForm />} />
             {/* {isLoggedIn && ( */}
             <Route
               path="/login/dashboard"
-              element={<ProtectedRoute Component={Dashboard} />}
+              element={
+                <ProtectedRoute isLoggedIn={isLoggedIn}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+              // element={isLoggedIn ? <Dashboard /> : <LoginForm />}
             />
             {/* )} */}
             {/* {isLoggedIn && ( */}
             <Route
               path="/login/dashboard/taskmanagement"
-              element={<ProtectedRoute Component={TaskManagement} />}
+              // element={<ProtectedRoute Component={TaskManagement} />}
+              element={
+                <ProtectedRoute isLoggedIn={isLoggedIn}>
+                  <TaskManagement />
+                </ProtectedRoute>
+              }
             />
             {/* )} */}
           </Routes>
