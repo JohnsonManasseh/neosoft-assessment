@@ -26,6 +26,7 @@ function Navbar() {
   };
 
   const handleLogout = () => {
+    localStorage.setItem("login", false);
     navigate("/login");
   };
 

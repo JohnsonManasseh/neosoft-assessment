@@ -1,5 +1,4 @@
-// LoginForm.js (Main Form Component)
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import TextField from "@mui/material/TextField";
@@ -49,9 +48,19 @@ const LoginForm = () => {
     dispatch(setVerified(true));
   };
 
+  // useEffect(() => {
+  //   let login = localStorage.getItem("login");
+  //   if (!login) {
+  //     navigate("/login");
+  //   }
+  // }, []);
+
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // localStorage.setItem("login", true);
+    // const navigate = useNavigate();
 
     // Reset previous error messages
     setNameError("");

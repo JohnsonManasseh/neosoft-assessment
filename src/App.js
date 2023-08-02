@@ -8,6 +8,7 @@ import TaskManagement from "./pages/TaskManagement";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useSelector } from "react-redux";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const isLoggedIn = useSelector((state) => state.loginForm.isLoggedIn);
@@ -19,15 +20,18 @@ const App = () => {
           <Routes>
             <Route path="/" element={<RegisterForm />} />
             <Route path="login" element={<LoginForm />} />
-            {isLoggedIn && (
-              <Route path="/login/dashboard" element={<Dashboard />} />
-            )}
-            {isLoggedIn && (
-              <Route
-                path="/login/dashboard/taskmanagement"
-                element={<TaskManagement />}
-              />
-            )}
+            {/* {isLoggedIn && ( */}
+            <Route
+              path="/login/dashboard"
+              element={<ProtectedRoute Component={Dashboard} />}
+            />
+            {/* )} */}
+            {/* {isLoggedIn && ( */}
+            <Route
+              path="/login/dashboard/taskmanagement"
+              element={<ProtectedRoute Component={TaskManagement} />}
+            />
+            {/* )} */}
           </Routes>
         </div>
       </DndProvider>
