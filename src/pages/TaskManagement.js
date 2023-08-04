@@ -257,7 +257,7 @@ function TaskManagement() {
         id: Math.random(),
         name: name,
         priority: priority,
-        stage: 0,
+        stage: stage,
         date: date,
         activeStep: 0,
       };
@@ -439,7 +439,27 @@ function TaskManagement() {
             <br />
             <br />
             <br />
-
+            <Box
+              sx={{
+                textAlign: "end",
+                mt: "70px",
+                // display: "flex",
+                // alignItems: "center",
+                // justifyContent: "space-between",
+              }}
+            >
+              {/* {task.length === 0 && (
+                <h4 style={{ fontSize: "15px" }}>Start by adding a new task</h4>
+              )} */}
+              <button
+                sx={{ mt: "70px" }}
+                // className="task-management-button"
+                type="submit"
+                onClick={handleModalOpen}
+              >
+                Add task
+              </button>
+            </Box>
             <Modal
               open={open}
               onClose={handleClose}
@@ -490,7 +510,8 @@ function TaskManagement() {
                     >
                       <MenuItem value={0}>Backlog stage</MenuItem>
                       <MenuItem value={1}>To Do stage</MenuItem>
-                      <MenuItem value={2}>Done stage</MenuItem>
+                      <MenuItem value={2}>Ongoing stage</MenuItem>
+                      <MenuItem value={3}>Done stage</MenuItem>
                     </Select>
                   </FormControl>
                   {stageError && (
@@ -709,59 +730,60 @@ function TaskManagement() {
               alignItems: "center",
             }}
           > */}
-            {task.length === 0 && (
-              <h4 style={{ fontSize: "15px" }}> Start by adding a new task</h4>
-            )}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                // marginTop: "50px",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
-            >
-              {totalStages.map((stage, index) => {
-                return (
-                  <Droppable
-                    direction="horizontal"
-                    droppableId={generateDroppableId(index)}
-                  >
-                    {(provided, snapshot) => {
-                      return (
-                        // <Box
-                        //   sx={{
-                        //     display: "flex",
-                        //     flexDirection: "column",
-                        //     alignItems: "center",
-                        //     justifyContent: "center",
-                        //   }}
-                        // >
-                        // <Grid
-                        //   container
-                        //   className="tasks__container"
-                        //   spacing={5}
-                        //   justifyContent="center"
-                        // >
-                        <TaskContainer
-                          key={index}
-                          stage={stage}
-                          droppableProps={provided.droppableProps}
-                          refProp={provided.innerRef}
-                          droppableProvided={provided}
-                          task={task}
-                          setTask={setTask}
-                        />
-                        // </Grid>
-                        // </Box>
-                      );
-                    }}
-                  </Droppable>
-                );
-              })}
-              {/* </Grid> */}
-            </Box>
+            <Container>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  // marginTop: "50px",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  padding: "0px 50px",
+                }}
+              >
+                {totalStages.map((stage, index) => {
+                  return (
+                    <Droppable
+                      direction="horizontal"
+                      droppableId={generateDroppableId(index)}
+                    >
+                      {(provided, snapshot) => {
+                        return (
+                          // <Box
+                          //   sx={{
+                          //     display: "flex",
+                          //     flexDirection: "column",
+                          //     alignItems: "center",
+                          //     justifyContent: "center",
+                          //   }}
+                          // >
+                          // <Grid
+                          //   container
+                          //   className="tasks__container"
+                          //   spacing={5}
+                          //   justifyContent="center"
+                          // >
+                          <TaskContainer
+                            key={index}
+                            stage={stage}
+                            droppableProps={provided.droppableProps}
+                            refProp={provided.innerRef}
+                            droppableProvided={provided}
+                            task={task}
+                            setTask={setTask}
+                          />
+                          // </Grid>
+                          // </Box>
+                        );
+                      }}
+                    </Droppable>
+                  );
+                })}
+
+                {/* </Grid> */}
+              </Box>
+            </Container>
             {/* {task.length === 0 && (
               <h4 style={{ fontSize: "15px" }}>Start by adding a new task</h4>
             )} */}
@@ -790,6 +812,11 @@ function TaskManagement() {
               </IconButton>
             </Tooltip> */}
             {/* {showDelete && ( */}
+            <Box sx={{ textAlign: "center", marginTop: "200px" }}>
+              {task.length === 0 && (
+                <h3 style={{ fontSize: "20px" }}>Start by adding a new task</h3>
+              )}
+            </Box>
             <Droppable droppableId="delete-area">
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -801,7 +828,7 @@ function TaskManagement() {
                         cursor: "pointer",
                         color: "grey",
                         position: "absolute",
-                        top: "480px",
+                        top: "400px",
                         // left: "5",
                         left: "500px",
                         zIndex: "9999999999",
@@ -813,7 +840,7 @@ function TaskManagement() {
               )}
             </Droppable>
             {/* )} */}
-            <Box sx={{ textAlign: "end", marginRight: "37px", mt: "70px" }}>
+            {/* <Box sx={{ textAlign: "end", marginRight: "37px", mt: "70px" }}>
               <button
                 sx={{ mt: "70px" }}
                 className="task-management-button"
@@ -821,8 +848,8 @@ function TaskManagement() {
                 onClick={handleModalOpen}
               >
                 Add task
-              </button>
-              {isDragging && (
+              </button> */}
+            {/* {isDragging && (
                 <Tooltip title="Delete">
                   <IconButton
                     sx={{
@@ -847,8 +874,8 @@ function TaskManagement() {
                     />
                   </IconButton>
                 </Tooltip>
-              )}
-            </Box>
+              )} */}
+            {/* </Box> */}
             {/* </Box> */}
           </Container>
         </Box>
