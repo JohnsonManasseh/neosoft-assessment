@@ -17,6 +17,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import GridViewIcon from "@mui/icons-material/GridView";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useDispatch } from "react-redux";
+import { logout } from "../store/LoginSlice";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function Navbar() {
 
   const handleLogout = () => {
     // localStorage.setItem("login", false);
-    dispatch({ type: "logout" });
+    dispatch(logout());
     navigate("/login");
   };
 

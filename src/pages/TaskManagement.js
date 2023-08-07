@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -35,6 +35,17 @@ import Task from "../components/Task";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { totalStages } from "../assets/constants/constants";
 import TaskContainer from "./TaskContainer.js";
+import { useDispatch } from "react-redux";
+import {
+  addTask,
+  deleteTask,
+  updateTask,
+  updateActiveStep,
+  resetActiveStep,
+  updateTaskStage,
+  updateTaskStageAction,
+} from "../store/TaskSlice"; // Replace '../path/to/reducers/taskSlice' with the correct path to your Redux slice
+import { useSelector } from "react-redux";
 
 const style = {
   position: "absolute",
@@ -62,7 +73,7 @@ function TaskManagement() {
   const [priority, setPriority] = useState("");
   const [date, setDate] = useState(null);
   const [stage, setStage] = useState(0);
-  const [task, setTask] = useState([]);
+  // const [task, setTask] = useState([]);
   const [cards, setCards] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [editedTask, setEditedTask] = useState([]);
@@ -80,26 +91,36 @@ function TaskManagement() {
 
   const [droppedTask, setDroppedTask] = useState(null); // State to hold the dropped task
 
+  const task = useSelector((state) => state.task.tasks);
+
   const generateDroppableId = (index) => `box-droppable-${index}`;
 
-  const updateTaskStage = (taskId, newStage) => {
-    setTask((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, stage: newStage } : task
-      )
-    );
+  const dispatch = useDispatch();
+
+  const handleTaskUpdate = () => {
+    if (droppedTask !== null) {
+      updateTaskStage(droppedTask.id, droppedTask.stage);
+      setIsConfirmationOpen(true);
+    }
   };
 
-  // const handleOnDragStart = (result) => {
-  //   if (!result) {
-  //     return;
-  //   }
-  //   setShowDelete(true);
-  // };
+  const updateTaskStage = (taskId, newStage) => {
+    dispatch(updateTaskStageAction({ id: taskId, newStage: newStage }));
+  };
+
+  useEffect(() => {
+    // Open the confirmation modal when droppedTask is set
+    if (droppedTask !== null) {
+      setIsConfirmationOpen(true);
+    }
+  }, [droppedTask]);
+
+  const handleTaskDelete = (taskId) => {
+    dispatch(deleteTask(taskId));
+  };
 
   const handleOnDragEnd = (result) => {
     if (!result.destination) {
-      // If the task was not dropped into a valid droppable area, return
       return;
     }
 
@@ -108,58 +129,19 @@ function TaskManagement() {
       result.destination.droppableId.split("-")[2]
     );
 
-    // If the task was dropped on the delete area, open the confirmation modal
     if (result.destination.droppableId === "delete-area") {
-      const taskToDelete = task[result.source.index];
-      setDroppedTask(taskToDelete);
-      setIsConfirmationOpen(true);
+      const taskId = task[result.source.index].id;
+      dispatch(deleteTask(taskId)); // Dispatch the deleteTask action
       return;
     }
 
-    // Handle task movement between stages
     if (sourceStageIndex !== destinationStageIndex) {
-      const updatedTask = {
-        ...task[result.source.index],
-        stage: destinationStageIndex,
-      };
-
-      const updatedTaskList = task.filter(
-        (t, index) => index !== result.source.index
-      );
-      updatedTaskList.splice(result.destination.index, 0, updatedTask);
-
-      setTask(updatedTaskList);
-    } else {
-      const items = Array.from(task);
-      const draggedTask = items[result.source.index];
-      items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, draggedTask);
-      setTask(items);
+      const taskId = task[result.source.index].id;
+      dispatch(
+        updateTaskStageAction({ id: taskId, newStage: destinationStageIndex })
+      ); // Dispatch the updateTaskStageAction action
     }
-    setShowDelete(false);
   };
-
-  // const handleOnDragEnd = (result) => {
-  //   if (!result.destination) {
-  //     // If the task was not dropped into a valid droppable area, return
-  //     return;
-  //   }
-
-  //   if (
-  //     result.source.droppableId === result.destination.droppableId &&
-  //     result.source.index === result.destination.index
-  //   ) {
-  //     // If the task was not moved, return
-  //     return;
-  //   }
-
-  //   // Move the task from the source box to the destination box
-  //   const updatedTasks = Array.from(task);
-  //   const [movedTask] = updatedTasks.splice(result.source.index, 1);
-  //   updatedTasks.splice(result.destination.index, 0, movedTask);
-
-  //   setTask(updatedTasks);
-  // };
 
   function handleClick(event) {
     event.preventDefault();
@@ -173,17 +155,6 @@ function TaskManagement() {
     CONTAINER: "container",
   };
 
-  const [{ isDragging }, drag] = useDrag(
-    () => ({
-      type: "div",
-      item: { taskId: task.length > 0 ? task[task.length - 1].id : null }, // Ensure taskId is set correctly
-      collect: (monitor) => ({
-        isDragging: !!monitor.isDragging(),
-      }),
-    }),
-    [task]
-  );
-
   const handleDeleteDrop = useCallback(
     (taskId) => {
       setIsConfirmationOpen(true);
@@ -193,31 +164,26 @@ function TaskManagement() {
   );
 
   const handleConfirmDelete = () => {
-    if (droppedTask) {
-      setTask((prevTasks) =>
-        prevTasks.filter((task) => task.id !== droppedTask.id)
-      );
-      setIsConfirmationOpen(false);
-      setDroppedTask(null); // Reset droppedTask state here
-    }
+    // Perform the actual task deletion using Redux action
+    dispatch(deleteTask(droppedTask.id));
+
+    // Close the confirmation modal
+    setIsConfirmationOpen(false);
+
+    // Clear the dropped task
+    setDroppedTask(null);
+
+    // Add a console.log statement to check if isConfirmationOpen is false
+    console.log("isConfirmationOpen:", isConfirmationOpen);
   };
 
   const handleCancelDelete = () => {
+    // Close the confirmation modal
     setIsConfirmationOpen(false);
+
+    // Clear the dropped task
     setDroppedTask(null);
   };
-
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: "div",
-    drop: (item) => {
-      console.log("Dropped Task ID:", item.taskId); // Log the dropped taskId to console
-      setDroppedTask(task.find((task) => task.id === item.taskId));
-      setIsConfirmationOpen(true);
-    },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  }));
 
   const breadcrumbs = [
     <Link
@@ -261,13 +227,13 @@ function TaskManagement() {
         date: date,
         activeStep: 0,
       };
+      console.log("New Task to be added:", newTask);
+      dispatch(addTask(newTask));
 
-      setTask([...task, newTask]);
-      console.log("hello", task);
       setName("");
       setPriority("");
       setStage("");
-      // setDate("");
+      setDate(null);
       setOpen(false);
     }
   };
@@ -280,28 +246,11 @@ function TaskManagement() {
       stage: stage,
     };
 
-    const updatedTasks = task.map((t) => (t === editedTask ? updatedTask : t));
+    // const updatedTasks = task.map((t) => (t === editedTask ? updatedTask : t));
 
-    setTask(updatedTasks);
+    dispatch(updateTask(updatedTask));
     setOpen2(false);
   };
-
-  const handleAddTask = () => {
-    const task = {
-      name: name,
-      priority: priority,
-      stage: stage,
-    };
-
-    setTask((prevTasks) => [...prevTasks, task]);
-    console.log("hello", task);
-    setName("");
-    setPriority("");
-    // setDate("");
-    setStage("");
-    setOpen(false);
-  };
-  //   console.log("task.name", task.name);
 
   const totalSteps = () => {
     return steps.length;
@@ -324,19 +273,22 @@ function TaskManagement() {
   };
 
   const handleNext = (taskId) => {
-    setTask((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, activeStep: task.activeStep + 1 } : task
-      )
-    );
+    // setTask((prevTasks) =>
+    //   prevTasks.map((task) =>
+    //     task.id === taskId ? { ...task, activeStep: task.activeStep + 1 } : task
+    //   )
+    // );
+    dispatch(updateActiveStep({ id: taskId }));
   };
 
   const handleReset = (taskId) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, activeStep: 0 } : task
-      )
-    );
+    // setTasks((prevTasks) =>
+    //   prevTasks.map((task) =>
+    //     task.id === taskId ? { ...task, activeStep: 0 } : task
+    //   )
+    // );
+
+    dispatch(resetActiveStep({ id: taskId }));
   };
 
   const handleStep = (step) => () => {
@@ -740,6 +692,7 @@ function TaskManagement() {
                   alignItems: "flex-start",
                   justifyContent: "center",
                   padding: "0px 50px",
+                  // flexWrap: "wrap",
                 }}
               >
                 {totalStages.map((stage, index) => {
@@ -771,7 +724,7 @@ function TaskManagement() {
                             refProp={provided.innerRef}
                             droppableProvided={provided}
                             task={task}
-                            setTask={setTask}
+                            // setTask={setTask}
                           />
                           // </Grid>
                           // </Box>
@@ -819,7 +772,11 @@ function TaskManagement() {
             </Box>
             <Droppable droppableId="delete-area">
               {(provided) => (
-                <div ref={provided.innerRef} {...provided.droppableProps}>
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  onClick={() => handleDeleteDrop(task.id)}
+                >
                   {/* Render the delete icon here */}
                   <IconButton>
                     <DeleteIcon
@@ -827,11 +784,12 @@ function TaskManagement() {
                         fontSize: "50px",
                         cursor: "pointer",
                         color: "grey",
-                        position: "absolute",
-                        top: "400px",
+                        // position: "absolute",
+                        // top: "400px",
                         // left: "5",
-                        left: "500px",
-                        zIndex: "9999999999",
+                        // left: "500px",
+                        right: "50px",
+                        // zIndex: "9999999999",
                       }}
                     />
                   </IconButton>

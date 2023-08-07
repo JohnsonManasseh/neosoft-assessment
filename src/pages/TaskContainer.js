@@ -8,7 +8,15 @@ import Typography from "@mui/material/Typography";
 import { useCallback } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Grid } from "@mui/material";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addTask,
+  deleteTask,
+  updateTask,
+  updateActiveStep,
+  resetActiveStep,
+  updateTaskStage,
+} from "../store/TaskSlice";
 import { totalStages } from "../assets/constants/constants";
 
 function TaskContainer({
@@ -34,9 +42,11 @@ function TaskContainer({
   //       )
   //     );
   //   };
+  const dispatch = useDispatch();
 
   const handleDelete = (taskId) => {
-    setTask((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    // setTask((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    dispatch(deleteTask(taskId));
   };
 
   const handleModalOpen2 = (taskToEdit) => {
@@ -53,36 +63,96 @@ function TaskContainer({
   //   };
 
   const [activeStageIndex, setActiveStageIndex] = useState(stage.stage);
-
   const handleNext = (taskId) => {
-    setTask((prevTasks) =>
-      prevTasks.map((t) =>
-        t.id === taskId
-          ? {
-              ...t,
-              stage:
-                activeStageIndex < totalStages.length - 1
-                  ? activeStageIndex + 1
-                  : t.stage,
-              activeStep: t.activeStep + 1,
-            }
-          : t
-      )
-    );
+    const taskToUpdate = task.find((t) => t.id === taskId);
+    if (taskToUpdate) {
+      const updatedStage =
+        activeStageIndex < totalStages.length - 1
+          ? activeStageIndex + 1
+          : taskToUpdate.stage;
+
+      const updatedActiveStep = taskToUpdate.activeStep + 1;
+
+      // Update the Redux state using the action with name, stage, and activeStep
+      dispatch(
+        updateTask({
+          id: taskId,
+          name: taskToUpdate.name, // Pass the name along with stage and activeStep
+          priority: taskToUpdate.priority,
+          stage: updatedStage,
+          activeStep: updatedActiveStep,
+        })
+      );
+    }
   };
+
   const handleBack = (taskId) => {
-    setTask((prevTasks) =>
-      prevTasks.map((t) =>
-        t.id === taskId
-          ? {
-              ...t,
-              stage: activeStageIndex > 0 ? activeStageIndex - 1 : t.stage,
-              activeStep: t.activeStep - 1,
-            }
-          : t
-      )
-    );
+    const taskToUpdate = task.find((t) => t.id === taskId);
+    if (taskToUpdate) {
+      const updatedStage =
+        activeStageIndex > 0 ? activeStageIndex - 1 : taskToUpdate.stage;
+
+      const updatedActiveStep = taskToUpdate.activeStep - 1;
+
+      // Update the Redux state using the action with name, stage, and activeStep
+      dispatch(
+        updateTask({
+          id: taskId,
+          name: taskToUpdate.name, // Pass the name along with stage and activeStep
+          priority: taskToUpdate.priority,
+          stage: updatedStage,
+          activeStep: updatedActiveStep,
+        })
+      );
+    }
   };
+
+  // const handleNext = (taskId) => {
+  //   // setTask((prevTasks) =>
+  //   //   prevTasks.map((t) =>
+  //   //     t.id === taskId
+  //   //       ? {
+  //   //           ...t,
+  //   //           stage:
+  //   //             activeStageIndex < totalStages.length - 1
+  //   //               ? activeStageIndex + 1
+  //   //               : t.stage,
+  //   //           activeStep: t.activeStep + 1,
+  //   //         }
+  //   //       : t
+  //   //   )
+  //   // );
+  //   dispatch(
+  //     updateTask({
+  //       id: taskId,
+  //       stage:
+  //         activeStageIndex < totalStages.length - 1
+  //           ? activeStageIndex + 1
+  //           : stage.stage,
+  //       activeStep: activeStep + 1,
+  //     })
+  //   );
+  // };
+  // const handleBack = (taskId) => {
+  //   // setTask((prevTasks) =>
+  //   //   prevTasks.map((t) =>
+  //   //     t.id === taskId
+  //   //       ? {
+  //   //           ...t,
+  //   //           stage: activeStageIndex > 0 ? activeStageIndex - 1 : t.stage,
+  //   //           activeStep: t.activeStep - 1,
+  //   //         }
+  //   //       : t
+  //   //   )
+  //   // );
+  //   dispatch(
+  //     updateTask({
+  //       id: taskId,
+  //       stage: activeStageIndex > 0 ? activeStageIndex - 1 : stage.stage,
+  //       activeStep: activeStep - 1,
+  //     })
+  //   );
+  // };
 
   const [{ isDragging }, drag] = useDrag(
     () => ({

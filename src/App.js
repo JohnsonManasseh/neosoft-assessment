@@ -21,6 +21,7 @@ const App = () => {
             <Route path="/" element={<RegisterForm />} />
             <Route path="/login" element={<LoginForm />} />
             {/* {isLoggedIn && ( */}
+
             <Route
               path="/login/dashboard"
               element={
