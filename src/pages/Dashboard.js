@@ -29,6 +29,9 @@ const bull = (
 );
 
 function Dashboard() {
+  const totalTasks = useSelector((state) => state.task.totalTasks);
+  const pendingTasks = useSelector((state) => state.task.pendingTasks);
+  const completedTasks = useSelector((state) => state.task.completedTasks);
   const navigate = useNavigate();
 
   const name = useSelector((state) => state.loginForm.name);
@@ -103,7 +106,7 @@ function Dashboard() {
                   Total
                 </Typography>
                 <br />
-                <h3>10</h3>
+                <h3>{totalTasks}</h3>
               </CardContent>
             </StyledCard>
 
@@ -120,7 +123,7 @@ function Dashboard() {
                   Pending
                 </Typography>
                 <br />
-                <h3>10</h3>
+                <h3>{pendingTasks}</h3>
               </CardContent>
             </StyledCard>
 
@@ -132,7 +135,7 @@ function Dashboard() {
                   Completed
                 </Typography>
                 <br />
-                <h3>10</h3>
+                <h3>{completedTasks}</h3>
               </CardContent>
             </StyledCard>
           </Box>

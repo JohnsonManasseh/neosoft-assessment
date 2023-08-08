@@ -13,7 +13,7 @@ import {
   setPassword,
   setRecaptcha,
 } from "../store/LoginSlice";
-import { Box } from "@mui/material";
+import { Box, Link, Typography } from "@mui/material";
 
 const LoginForm = () => {
   // State variables to store form input values and error messages
@@ -92,10 +92,32 @@ const LoginForm = () => {
 
   return (
     <div className="main-container">
-      <div className="login-form-container">
-        <h2 className="login-title">LOGIN</h2>
+      <Box
+        sx={{
+          maxWidth: "400px",
+          margin: "auto",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "15px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            color: "#0eaf94",
+            fontWeight: 600,
+            letterSpacing: "3px",
+            fontFamily: "Lato, sans-serif",
+          }}
+        >
+          LOGIN
+        </Typography>
         <br />
-        <div className="success-message-container"></div>
         <form onSubmit={handleSubmit}>
           {/* Text field for Username/Email input */}
           <TextField
@@ -168,25 +190,47 @@ const LoginForm = () => {
             <div className="captcha-error-message">{recaptchaError}</div>
           )}
           <br />
-          <div className="button-container">
-            <h3 className="new-user-bottom">
-              New user? {/* Button to navigate to registration page */}
-              <span
-                className="register-span"
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              variant="h3"
+              // className="new-user-bottom"
+              sx={{
+                fontSize: "15px",
+                marginBottom: "10px",
+                fontWeight: "600",
+                fontFamily: "poppins",
+              }}
+            >
+              New user?
+              <Link
+                component="span"
                 onClick={() => {
                   navigate("/");
                 }}
+                sx={{
+                  color: "darkblue",
+                  cursor: "pointer",
+                  marginLeft: "5px",
+                  textDecoration: "none",
+                }}
               >
                 Register
-              </span>
-            </h3>
+              </Link>
+            </Typography>
             {/* Button to submit the form and perform login */}
             <button type="submit" onClick={handleSubmit}>
               Login
             </button>
-          </div>
+          </Box>
         </form>
-      </div>
+      </Box>
     </div>
   );
 };

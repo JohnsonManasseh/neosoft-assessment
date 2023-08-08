@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Step from "@mui/material/Step";
 import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
@@ -10,20 +9,18 @@ import Container from "@mui/material/Container";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import StepLabel from "@mui/material/StepLabel";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import FlagIcon from "@mui/icons-material/Flag";
+import { styled } from "@mui/material";
 
-import { totalStages } from "../assets/constants/constants";
 function Task({
   t,
   handleBack,
   handleDelete,
   handleModalOpen2,
   handleNext,
-  drag,
   steps,
   date,
   taskRefProp,
@@ -31,23 +28,17 @@ function Task({
   taskDragHandleProp,
   priority,
 }) {
-  const isBackDisabled = t.stage === 0; // Disable left arrow if it's the first stage
+  const isBackDisabled = t.stage === 0;
   const isNextDisabled = t.stage === 3;
-  // const [activeStageIndex, setActiveStageIndex] = useState(0);
 
-  // const handleNextCard = () => {
-  //   if (activeStageIndex < totalStages.length - 1) {
-  //     setActiveStageIndex((prevIndex) => prevIndex + 1);
-  //   }
-  //   console.log("hello johnson");
-  // };
+  const StyledCard = styled(Card)(({ theme }) => ({
+    boxShadow: theme.shadows[1],
+  }));
 
   return (
     <div {...taskDraggableProp} {...taskDragHandleProp} ref={taskRefProp}>
-      {/* {task.map((t) => { */}
-      {/* const isBackDisabled = t.activeStep === 0; return ( */}
-
-      <div ref={drag} key={t.id}>
+      <div key={t.id}>
+        {/* <StyledCard> */}
         <Container>
           <br />
           <Box
@@ -58,7 +49,7 @@ function Task({
               borderRadius: "20px",
             }}
           >
-            <Card
+            <StyledCard
               sx={{
                 backgroundColor: "aliceblue",
                 borderRadius: "15px",
@@ -83,42 +74,6 @@ function Task({
                     <br />
                     <br />
                     <br />
-
-                    {/* <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <IconButton>
-                        <ArrowCircleLeftIcon
-                          color="blue"
-                          sx={{ height: "20px" }}
-                        />
-                      </IconButton>
-                      <IconButton>
-                        <ArrowCircleRightIcon
-                          color="green"
-                          sx={{ height: "20px" }}
-                        />
-                      </IconButton>
-                    </Box> */}
-
-                    {/* <IconButton>
-                      <ArrowCircleLeftIcon color="blue" />
-                    </IconButton>
-                    <IconButton>
-                      <ArrowCircleRightIcon />
-                    </IconButton> */}
-                    {/* <button
-                      type="submit"
-                      //   className=""
-                      // disabled={isBackDisabled}
-                      //   disabled
-                      onClick={() => handleBack(t.id)}
-                    >
-                      Back
-                    </button> */}
                   </Box>
                   <Box>
                     <Box
@@ -236,25 +191,25 @@ function Task({
                         justifyContent: "space-between",
                       }}
                     >
-                      <IconButton>
+                      <IconButton disabled={isBackDisabled}>
                         <ArrowCircleLeftIcon
                           onClick={() => handleBack(t.id)}
-                          disabled
                           sx={{
                             fontSize: "50px",
                             cursor: "pointer",
                             color: "#185a9d",
+                            color: isBackDisabled ? "grey" : "#185a9d",
                           }}
                         />
                       </IconButton>
-                      <IconButton>
+                      <IconButton disabled={isNextDisabled}>
                         <ArrowCircleRightIcon
                           onClick={() => handleNext(t.id)}
-                          disabled={isNextDisabled}
                           sx={{
                             fontSize: "50px",
                             cursor: "pointer",
-                            color: "#0eaf94",
+                            // color: "#0eaf94",
+                            color: isNextDisabled ? "grey" : "#0eaf94",
                           }}
                         />
                       </IconButton>
@@ -270,12 +225,11 @@ function Task({
                   </Box>
                 </Box>
               </CardContent>
-            </Card>
+            </StyledCard>
           </Box>
         </Container>
+        {/* </StyledCard> */}
       </div>
-      {/* ); */}
-      {/* })} */}
     </div>
   );
 }

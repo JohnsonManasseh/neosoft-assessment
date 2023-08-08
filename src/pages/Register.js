@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Grid } from "@mui/material";
+import { TextField, Grid, Box, Typography, Link } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
@@ -109,9 +109,32 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="main-container">
-      <div className="register-form-container">
-        <h3 className="login-title"> REGISTER</h3>
+    <Box className="main-container">
+      <Box
+        sx={{
+          maxWidth: "780px",
+          margin: "auto",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "15px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            color: "#0eaf94",
+            fontWeight: 600,
+            letterSpacing: "3px",
+            fontFamily: "Lato, sans-serif",
+          }}
+        >
+          REGISTER
+        </Typography>
         <br />
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -254,23 +277,46 @@ const RegisterForm = () => {
           <RegistrationModal open={open} handleClose={handleClose} />
 
           <br />
-          <div className="button-container">
-            <h3 className="new-user-bottom">
-              Already a user?{" "}
-              <span
-                className="register-span"
+          <Box
+            // className="button-container"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              variant="h3"
+              // className="new-user-bottom"
+              sx={{
+                fontSize: "15px",
+                marginBottom: "10px",
+                fontWeight: "600",
+                fontFamily: "poppins",
+              }}
+            >
+              Already a user?
+              <Link
+                component="span"
                 onClick={() => {
                   navigate("login");
                 }}
+                sx={{
+                  color: "darkblue",
+                  cursor: "pointer",
+                  marginLeft: "5px",
+                  textDecoration: "none",
+                }}
               >
                 Login
-              </span>
-            </h3>
+              </Link>
+            </Typography>
             <button type="submit">Register</button>
-          </div>
+          </Box>
         </form>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

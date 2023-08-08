@@ -1,8 +1,4 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -10,28 +6,24 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
   Modal,
+  IconButton,
+  Button,
+  TextField,
+  Grid,
+  InputLabel,
+  Box,
+  Select,
+  Container,
+  Breadcrumbs,
 } from "@mui/material";
-import { TextField, Grid } from "@mui/material";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Container from "@mui/material/Container";
 import Navbar from "../components/Navbar";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import Link from "@mui/material/Link";
-import { useDrag, useDrop } from "react-dnd";
-import { useCallback } from "react";
-// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Task from "../components/Task";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { totalStages } from "../assets/constants/constants";
 import TaskContainer from "./TaskContainer.js";
@@ -44,7 +36,7 @@ import {
   resetActiveStep,
   updateTaskStage,
   updateTaskStageAction,
-} from "../store/TaskSlice"; // Replace '../path/to/reducers/taskSlice' with the correct path to your Redux slice
+} from "../store/TaskSlice";
 import { useSelector } from "react-redux";
 
 const style = {
@@ -65,7 +57,7 @@ const style = {
 
 function TaskManagement() {
   const [modal, setModal] = useState(false);
-  const [activeStep, setActiveStep] = React.useState(0);
+  // const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
@@ -73,22 +65,13 @@ function TaskManagement() {
   const [priority, setPriority] = useState("");
   const [date, setDate] = useState(null);
   const [stage, setStage] = useState(0);
-  // const [task, setTask] = useState([]);
-  const [cards, setCards] = useState([]);
-  const [editMode, setEditMode] = useState(false);
-  const [editedTask, setEditedTask] = useState([]);
-  const [tasks, setTasks] = useState([
-    { id: 1, name: "Task 1", activeStep: 0 },
-    { id: 2, name: "Task 2", activeStep: 0 },
-  ]);
   const [taskNameError, setTaskNameError] = useState("");
   const [stageError, setStageError] = useState("");
   const [priorityError, setPriorityError] = useState("");
   const [dateError, setDateError] = useState("");
-  // const [droppedTask, setDroppedTask] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  const [showBin, setShowBin] = useState(false);
   const [droppedTask, setDroppedTask] = useState(null); // State to hold the dropped task
 
   const task = useSelector((state) => state.task.tasks);
@@ -96,13 +79,6 @@ function TaskManagement() {
   const generateDroppableId = (index) => `box-droppable-${index}`;
 
   const dispatch = useDispatch();
-
-  const handleTaskUpdate = () => {
-    if (droppedTask !== null) {
-      updateTaskStage(droppedTask.id, droppedTask.stage);
-      setIsConfirmationOpen(true);
-    }
-  };
 
   const updateTaskStage = (taskId, newStage) => {
     dispatch(updateTaskStageAction({ id: taskId, newStage: newStage }));
@@ -119,6 +95,13 @@ function TaskManagement() {
     dispatch(deleteTask(taskId));
   };
 
+  const handleOnDragStart = (result) => {
+    setShowBin(true);
+    if (!result.destination) {
+      return;
+    }
+  };
+
   const handleOnDragEnd = (result) => {
     if (!result.destination) {
       return;
@@ -131,7 +114,9 @@ function TaskManagement() {
 
     if (result.destination.droppableId === "delete-area") {
       const taskId = task[result.source.index].id;
-      dispatch(deleteTask(taskId)); // Dispatch the deleteTask action
+      setTaskToDelete(taskId);
+      // dispatch(deleteTask(taskId));
+      setIsConfirmationOpen(true);
       return;
     }
 
@@ -141,48 +126,30 @@ function TaskManagement() {
         updateTaskStageAction({ id: taskId, newStage: destinationStageIndex })
       ); // Dispatch the updateTaskStageAction action
     }
+    setShowBin(false);
   };
 
   function handleClick(event) {
     event.preventDefault();
     navigate("/login/dashboard");
-    // navigate to="/dashboard"
     console.info("You clicked a breadcrumb.");
   }
 
-  const CardTypes = {
-    CARD: "card",
-    CONTAINER: "container",
-  };
-
-  const handleDeleteDrop = useCallback(
-    (taskId) => {
-      setIsConfirmationOpen(true);
-      setDroppedTask(task.find((task) => task.id === taskId));
-    },
-    [task]
-  );
-
   const handleConfirmDelete = () => {
-    // Perform the actual task deletion using Redux action
-    dispatch(deleteTask(droppedTask.id));
+    dispatch(deleteTask(taskToDelete));
 
     // Close the confirmation modal
     setIsConfirmationOpen(false);
-
-    // Clear the dropped task
-    setDroppedTask(null);
-
-    // Add a console.log statement to check if isConfirmationOpen is false
-    console.log("isConfirmationOpen:", isConfirmationOpen);
+    setShowBin(false);
   };
 
   const handleCancelDelete = () => {
     // Close the confirmation modal
     setIsConfirmationOpen(false);
 
-    // Clear the dropped task
-    setDroppedTask(null);
+    // Clear the taskToDelete state
+    setTaskToDelete(null);
+    setShowBin(false);
   };
 
   const breadcrumbs = [
@@ -246,60 +213,8 @@ function TaskManagement() {
       stage: stage,
     };
 
-    // const updatedTasks = task.map((t) => (t === editedTask ? updatedTask : t));
-
     dispatch(updateTask(updatedTask));
     setOpen2(false);
-  };
-
-  const totalSteps = () => {
-    return steps.length;
-  };
-
-  const handleChange = (event) => {
-    setStage(event.target.value);
-  };
-
-  const completedSteps = () => {
-    return Object.keys(completed).length;
-  };
-
-  const isLastStep = () => {
-    return activeStep === totalSteps() - 1;
-  };
-
-  const allStepsCompleted = () => {
-    return completedSteps() === totalSteps();
-  };
-
-  const handleNext = (taskId) => {
-    // setTask((prevTasks) =>
-    //   prevTasks.map((task) =>
-    //     task.id === taskId ? { ...task, activeStep: task.activeStep + 1 } : task
-    //   )
-    // );
-    dispatch(updateActiveStep({ id: taskId }));
-  };
-
-  const handleReset = (taskId) => {
-    // setTasks((prevTasks) =>
-    //   prevTasks.map((task) =>
-    //     task.id === taskId ? { ...task, activeStep: 0 } : task
-    //   )
-    // );
-
-    dispatch(resetActiveStep({ id: taskId }));
-  };
-
-  const handleStep = (step) => () => {
-    setActiveStep(step);
-  };
-
-  const handleComplete = () => {
-    const newCompleted = completed;
-    newCompleted[activeStep] = true;
-    setCompleted(newCompleted);
-    handleNext();
   };
 
   const handleModalOpen = (isEditMode) => {
@@ -313,24 +228,11 @@ function TaskManagement() {
 
   const navigate = useNavigate();
 
-  const handleTaskManagement = () => {
-    navigate("taskmanagement");
-  };
-
-  const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
-
   const isResponsive = window.innerWidth <= 960;
-
-  // const handleOnDragEnd = (result) => {
-  //   if (!result) {
-  //     return;
-  //   }
-  // };
-
   return (
     <DragDropContext
       onDragEnd={handleOnDragEnd}
-      // onDragStart={handleOnDragStart}
+      onDragStart={handleOnDragStart}
     >
       <div>
         <Navbar />
@@ -395,11 +297,37 @@ function TaskManagement() {
               sx={{
                 textAlign: "end",
                 mt: "70px",
-                // display: "flex",
-                // alignItems: "center",
-                // justifyContent: "space-between",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                maxHeight: "30px",
               }}
             >
+              <Droppable droppableId="delete-area">
+                {(provided) => (
+                  <div ref={provided.innerRef} {...provided.droppableProps}>
+                    {/* Render the delete icon here */}
+                    <IconButton>
+                      {showBin && (
+                        <DeleteIcon
+                          sx={{
+                            fontSize: "35px",
+                            cursor: "pointer",
+                            color: "grey",
+                            // position: "absolute",
+                            // top: "400px",
+                            // left: "5",
+                            // left: "500px",
+                            // right: "50px",
+                            // zIndex: "9999999999",
+                          }}
+                        />
+                      )}
+                    </IconButton>
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
               {/* {task.length === 0 && (
                 <h4 style={{ fontSize: "15px" }}>Start by adding a new task</h4>
               )} */}
@@ -653,35 +581,7 @@ function TaskManagement() {
             </Modal>
 
             {/* edit modal end */}
-            <Box sx={{ width: "100%" }}>
-              <Container></Container>
-              <div>
-                {allStepsCompleted() ? (
-                  <React.Fragment>
-                    <Typography sx={{ mt: 2, mb: 1 }}>
-                      All steps completed - you&apos;re finished
-                    </Typography>
-                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                      <Box sx={{ flex: "1 1 auto" }} />
-                      <Button onClick={() => handleReset(task.id)}>
-                        Reset
-                      </Button>
-                    </Box>
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment></React.Fragment>
-                )}
-              </div>
-            </Box>
 
-            {/* <div>Put here</div> */}
-            {/* <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          > */}
             <Container>
               <Box
                 sx={{
@@ -703,20 +603,6 @@ function TaskManagement() {
                     >
                       {(provided, snapshot) => {
                         return (
-                          // <Box
-                          //   sx={{
-                          //     display: "flex",
-                          //     flexDirection: "column",
-                          //     alignItems: "center",
-                          //     justifyContent: "center",
-                          //   }}
-                          // >
-                          // <Grid
-                          //   container
-                          //   className="tasks__container"
-                          //   spacing={5}
-                          //   justifyContent="center"
-                          // >
                           <TaskContainer
                             key={index}
                             stage={stage}
@@ -726,8 +612,6 @@ function TaskManagement() {
                             task={task}
                             // setTask={setTask}
                           />
-                          // </Grid>
-                          // </Box>
                         );
                       }}
                     </Droppable>
@@ -737,104 +621,12 @@ function TaskManagement() {
                 {/* </Grid> */}
               </Box>
             </Container>
-            {/* {task.length === 0 && (
-              <h4 style={{ fontSize: "15px" }}>Start by adding a new task</h4>
-            )} */}
-            {/* <Tooltip title="Delete">
-              <IconButton
-                sx={{
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 0, 0, 0.1)",
-                  },
-                }}
-              >
-                <DeleteIcon
-                // ref={drop}
-                // style={{
-                //   cursor: "pointer",
-                //   color: "grey",
-                //   fontSize: "100px",
-                //   position: "absolute",
-                //   top: "50",
-                //   // left: "5",
-                //   right: "500",
-                //   zIndex: "9999999999",
-                // }}
-                // onClick={(t) => handleDelete(t.id)}
-                />
-              </IconButton>
-            </Tooltip> */}
-            {/* {showDelete && ( */}
+
             <Box sx={{ textAlign: "center", marginTop: "200px" }}>
               {task.length === 0 && (
                 <h3 style={{ fontSize: "20px" }}>Start by adding a new task</h3>
               )}
             </Box>
-            <Droppable droppableId="delete-area">
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  onClick={() => handleDeleteDrop(task.id)}
-                >
-                  {/* Render the delete icon here */}
-                  <IconButton>
-                    <DeleteIcon
-                      sx={{
-                        fontSize: "50px",
-                        cursor: "pointer",
-                        color: "grey",
-                        // position: "absolute",
-                        // top: "400px",
-                        // left: "5",
-                        // left: "500px",
-                        right: "50px",
-                        // zIndex: "9999999999",
-                      }}
-                    />
-                  </IconButton>
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-            {/* )} */}
-            {/* <Box sx={{ textAlign: "end", marginRight: "37px", mt: "70px" }}>
-              <button
-                sx={{ mt: "70px" }}
-                className="task-management-button"
-                type="submit"
-                onClick={handleModalOpen}
-              >
-                Add task
-              </button> */}
-            {/* {isDragging && (
-                <Tooltip title="Delete">
-                  <IconButton
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 0, 0, 0.1)",
-                      },
-                    }}
-                  >
-                    <DeleteIcon
-                      ref={drop}
-                      style={{
-                        cursor: "pointer",
-                        color: "grey",
-                        fontSize: "100px",
-                        position: "absolute",
-                        top: "50",
-                        // left: "5",
-                        right: "500",
-                        zIndex: "9999999999",
-                      }}
-                      // onClick={(t) => handleDelete(t.id)}
-                    />
-                  </IconButton>
-                </Tooltip>
-              )} */}
-            {/* </Box> */}
-            {/* </Box> */}
           </Container>
         </Box>
       </div>
