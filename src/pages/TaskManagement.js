@@ -32,9 +32,6 @@ import {
   addTask,
   deleteTask,
   updateTask,
-  updateActiveStep,
-  resetActiveStep,
-  updateTaskStage,
   updateTaskStageAction,
 } from "../store/TaskSlice";
 import { useSelector } from "react-redux";
@@ -42,6 +39,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import TaskModal from "../components/TaskModal";
 
 const style = {
   position: "absolute",
@@ -77,6 +75,8 @@ function TaskManagement() {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [showBin, setShowBin] = useState(false);
   const [droppedTask, setDroppedTask] = useState(null); // State to hold the dropped task
+  const [editedTaskId, setEditedTaskId] = useState(null);
+  const [taskToEdit, setTaskToEdit] = useState(null); // Initialize with null
 
   const task = useSelector((state) => state.task.tasks);
 
@@ -211,7 +211,7 @@ function TaskManagement() {
 
   const editCard = () => {
     const updatedTask = {
-      id: Math.random(),
+      id: taskToEdit.id,
       name: name,
       priority: priority,
       stage: stage,
@@ -271,7 +271,7 @@ function TaskManagement() {
               <Button
                 onClick={handleConfirmDelete}
                 sx={{
-                  backgroundColor: "#185a9d",
+                  backgroundColor: "secondary",
                   color: "white",
                   borderRadius: "15px",
                   "&:hover": {
@@ -345,131 +345,24 @@ function TaskManagement() {
                 Add task
               </button>
             </Box>
-            <Modal
+            <TaskModal
+              // ... props for TaskContainer ...
               open={open}
-              onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box sx={style}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Create Task
-                </Typography>
-                <br />
-                <Box sx={{ minWidth: 120 }}>
-                  <TextField
-                    id="outlined-basic"
-                    label={
-                      <>
-                        Task name <span style={{ color: "red" }}>*</span>
-                      </>
-                    }
-                    variant="outlined"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    sx={{ width: "350px", marginBottom: "40px" }}
-                    rows={4}
-                    className="textfield-margin"
-                  />
-                  {taskNameError && (
-                    <div className="error-message">{taskNameError}</div>
-                  )}
-                </Box>
-                <Box sx={{ minWidth: 120 }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">
-                      Stage <span style={{ color: "red" }}>*</span>
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={stage}
-                      label={
-                        <>
-                          Stage <span style={{ color: "red" }}>*</span>
-                        </>
-                      }
-                      onChange={(e) => setStage(e.target.value)}
-                      sx={{ width: "350px", marginBottom: "40px" }}
-                    >
-                      <MenuItem value={0}>Backlog stage</MenuItem>
-                      <MenuItem value={1}>To Do stage</MenuItem>
-                      <MenuItem value={2}>Ongoing stage</MenuItem>
-                      <MenuItem value={3}>Done stage</MenuItem>
-                    </Select>
-                  </FormControl>
-                  {stageError && (
-                    <div className="error-message">{stageError}</div>
-                  )}
-                </Box>
-
-                <Box sx={{ minWidth: 120 }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">
-                      Priority <span style={{ color: "red" }}>*</span>
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={priority}
-                      label={
-                        <>
-                          Stage <span style={{ color: "red" }}>*</span>
-                        </>
-                      }
-                      onChange={(e) => setPriority(e.target.value)}
-                      sx={{ width: "350px", marginBottom: "40px" }}
-                    >
-                      <MenuItem value="high">High</MenuItem>
-                      <MenuItem value="medium">Medium</MenuItem>
-                      <MenuItem value="low">Low</MenuItem>
-                    </Select>
-                  </FormControl>
-                  {priorityError && (
-                    <div className="error-message">{priorityError}</div>
-                  )}
-                </Box>
-                <Box sx={{ minWidth: 120 }}>
-                  <FormControl fullWidth>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer
-                        sx={{ width: "350px", marginBottom: "40px" }}
-                        components={["DatePicker"]}
-                      >
-                        <DatePicker
-                          label={
-                            <>
-                              Date <span style={{ color: "red" }}>*</span>
-                            </>
-                          }
-                          // sx={{ width: "350px", marginBottom: "40px" }}
-                          //   sx={{ width: "400px !important", marginBottom: "40px" }}
-                          onChange={(newDate) => {
-                            setDate(newDate);
-                            console.log(newDate);
-                          }}
-                          renderInput={(params) => <TextField {...params} />}
-                          value={date}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </FormControl>
-                  {dateError && (
-                    <div className="date-error-message">{dateError}</div>
-                  )}
-                </Box>
-                <br />
-                {/* <LocalizationProvider>
-                  <DemoContainer components={["DatePicker"]}>
-                    <DatePicker label="Basic date picker" />
-                  </DemoContainer>
-                </LocalizationProvider> */}
-                <button onClick={addCard} type="submit">
-                  Add
-                </button>
-              </Box>
-            </Modal>
+              handleClose={handleClose}
+              name={name}
+              setName={setName}
+              taskNameError={taskNameError}
+              stage={stage}
+              setStage={setStage}
+              stageError={stageError}
+              priority={priority}
+              setPriority={setPriority}
+              priorityError={priorityError}
+              setDate={setDate}
+              date={date}
+              dateError={dateError}
+              addCard={addCard}
+            />
             {/* edit modal */}
 
             <Modal
@@ -520,6 +413,7 @@ function TaskManagement() {
                     >
                       <MenuItem value={0}>Backlog stage</MenuItem>
                       <MenuItem value={1}>To Do stage</MenuItem>
+                      <MenuItem value={2}>Ongoing stage</MenuItem>
                       <MenuItem value={2}>Done stage</MenuItem>
                     </Select>
                   </FormControl>
@@ -545,9 +439,9 @@ function TaskManagement() {
                       onChange={(e) => setPriority(e.target.value)}
                       sx={{ width: "350px", marginBottom: "40px" }}
                     >
-                      <MenuItem value={0}>High</MenuItem>
-                      <MenuItem value={1}>Medium</MenuItem>
-                      <MenuItem value={2}>Low</MenuItem>
+                      <MenuItem value="high">High</MenuItem>
+                      <MenuItem value="medium">Medium</MenuItem>
+                      <MenuItem value="low">Low</MenuItem>
                     </Select>
                   </FormControl>
                   {priorityError && (
@@ -558,14 +452,17 @@ function TaskManagement() {
                 <Box sx={{ minWidth: 120 }}>
                   <FormControl fullWidth>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DatePicker"]}>
+                      <DemoContainer
+                        sx={{ width: "350px", marginBottom: "40px" }}
+                        components={["DatePicker"]}
+                      >
                         <DatePicker
                           label={
                             <>
                               Date <span style={{ color: "red" }}>*</span>
                             </>
                           }
-                          sx={{ width: "350px", marginBottom: "40px" }}
+                          // sx={{ width: "350px", marginBottom: "40px" }}
                           //   sx={{ width: "400px !important", marginBottom: "40px" }}
                           onChange={(newDate) => {
                             setDate(newDate);
@@ -618,6 +515,12 @@ function TaskManagement() {
                             refProp={provided.innerRef}
                             droppableProvided={provided}
                             task={task}
+                            setOpen2={setOpen2}
+                            setTaskToEdit={setTaskToEdit}
+                            setName={setName}
+                            setPriority={setPriority}
+                            setStage={setStage}
+                            setDate={setDate}
                             // setTask={setTask}
                           />
                         );

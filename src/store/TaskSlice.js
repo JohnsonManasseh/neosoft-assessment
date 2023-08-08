@@ -44,7 +44,6 @@ const taskSlice = createSlice({
       const index = state.tasks.findIndex((task) => task.id === id);
 
       if (index !== -1) {
-        // Use immer's produce function to safely update the state
         state.tasks = state.tasks.map((task) =>
           task.id === id ? { ...task, name, priority, stage } : task
         );

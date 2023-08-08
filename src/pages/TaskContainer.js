@@ -15,21 +15,22 @@ import {
   updateTaskStage,
 } from "../store/TaskSlice";
 import { totalStages } from "../assets/constants/constants";
+// import { updateTask } from "../store/TaskSlice";
 
 function TaskContainer({
   task,
   setTask,
+  setOpen2,
   droppableProps,
   refProp,
   stage,
   droppableProvided,
+  setTaskToEdit,
+  setName,
+  setPriority,
+  setStage,
+  setDate,
 }) {
-  //   const [task, setTask] = useState([]);
-  const [editedTask, setEditedTask] = useState([]);
-  const [open2, setOpen2] = useState(false);
-  const [droppedTask, setDroppedTask] = useState(null);
-
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const steps = ["BACKLOG", "TO DO", "ONGOING", "DONE"];
 
   const dispatch = useDispatch();
@@ -39,8 +40,15 @@ function TaskContainer({
   };
 
   const handleModalOpen2 = (taskToEdit) => {
-    setEditedTask(taskToEdit);
+    setName(taskToEdit.name); // Set the name state to the task's name
+    setPriority(taskToEdit.priority);
+    setStage(taskToEdit.stage);
+    setDate(taskToEdit.date);
+    // const updatedTask = { ...taskToEdit /* updated properties */ };
+    setTaskToEdit(taskToEdit);
+    // dispatch(updateTask(updatedTask));
     setOpen2(true);
+    console.log("EditIcon clicked");
   };
 
   const [activeStageIndex, setActiveStageIndex] = useState(stage.stage);
@@ -54,11 +62,10 @@ function TaskContainer({
 
       const updatedActiveStep = taskToUpdate.activeStep + 1;
 
-      // Update the Redux state using the action with name, stage, and activeStep
       dispatch(
         updateTask({
           id: taskId,
-          name: taskToUpdate.name, // Pass the name along with stage and activeStep
+          name: taskToUpdate.name,
           priority: taskToUpdate.priority,
           stage: updatedStage,
           activeStep: updatedActiveStep,
@@ -75,11 +82,10 @@ function TaskContainer({
 
       const updatedActiveStep = taskToUpdate.activeStep - 1;
 
-      // Update the Redux state using the action with name, stage, and activeStep
       dispatch(
         updateTask({
           id: taskId,
-          name: taskToUpdate.name, // Pass the name along with stage and activeStep
+          name: taskToUpdate.name,
           priority: taskToUpdate.priority,
           stage: updatedStage,
           activeStep: updatedActiveStep,
@@ -89,7 +95,7 @@ function TaskContainer({
   };
 
   const StyledCard = styled(Card)(({ theme }) => ({
-    boxShadow: theme.shadows[3], // Adjust the shadow level (0 to 24) as needed
+    boxShadow: theme.shadows[3],
   }));
 
   return (
@@ -114,6 +120,7 @@ function TaskContainer({
           <Typography variant="h5" component="div" sx={{ padding: "20px 0px" }}>
             {stage.name}
           </Typography>
+          {/* getting the tasks mapped */}
           {task
             .filter((filteredTask) => filteredTask.stage === stage.stage)
             .map((t, index) => (

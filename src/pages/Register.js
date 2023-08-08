@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Grid, Box, Typography, Link } from "@mui/material";
+import {
+  TextField,
+  Grid,
+  Box,
+  Typography,
+  Link,
+  useTheme,
+} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
@@ -34,6 +41,8 @@ const RegisterForm = () => {
   const handleOpen = () => {
     setOpen(true);
   };
+
+  const theme = useTheme();
 
   // Function to handle modal close
   const handleClose = () => {
@@ -126,8 +135,8 @@ const RegisterForm = () => {
       >
         <Typography
           variant="h5"
+          color="primary"
           sx={{
-            color: "#0eaf94",
             fontWeight: 600,
             letterSpacing: "3px",
             fontFamily: "Lato, sans-serif",

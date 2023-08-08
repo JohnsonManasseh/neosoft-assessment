@@ -108,8 +108,8 @@ const LoginForm = () => {
       >
         <Typography
           variant="h5"
+          color="primary"
           sx={{
-            color: "#0eaf94",
             fontWeight: 600,
             letterSpacing: "3px",
             fontFamily: "Lato, sans-serif",
