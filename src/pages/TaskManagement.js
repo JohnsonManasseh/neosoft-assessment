@@ -271,7 +271,7 @@ function TaskManagement() {
               <Button
                 onClick={handleConfirmDelete}
                 sx={{
-                  backgroundColor: "secondary",
+                  backgroundColor: "#185a9d",
                   color: "white",
                   borderRadius: "15px",
                   "&:hover": {
