@@ -131,7 +131,7 @@ function TaskContainer({
                       taskRefProp={provided.innerRef}
                       taskDraggableProp={provided.draggableProps}
                       taskDragHandleProp={provided.dragHandleProps}
-                      // date={date}
+                      date={t.date}
                     />
                   </div>
                 )}

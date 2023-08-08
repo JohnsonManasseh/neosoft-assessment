@@ -59,6 +59,10 @@ button:hover {
   background-color: #0eaf94b0;
 }
 
+.css-fjnt7u-MuiStack-root > .MuiTextField-root {
+  min-width: 350px !important;
+}
+
 .dialog-confirm-button {
   background-color: #185a9d !important;
   color: white !important;

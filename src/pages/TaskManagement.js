@@ -38,6 +38,10 @@ import {
   updateTaskStageAction,
 } from "../store/TaskSlice";
 import { useSelector } from "react-redux";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const style = {
   position: "absolute",
@@ -303,7 +307,7 @@ function TaskManagement() {
                 maxHeight: "30px",
               }}
             >
-              <Box>
+              <Box sx={{ maxHeight: "10px", maxWidth: "10px" }}>
                 <Droppable droppableId="delete-area">
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -317,7 +321,6 @@ function TaskManagement() {
                               color: "grey",
                               // position: "absolute",
                               // top: "400px",
-                              // left: "5",
                               // left: "500px",
                               // right: "50px",
                               // zIndex: "9999999999",
@@ -429,15 +432,18 @@ function TaskManagement() {
                 </Box>
                 <Box sx={{ minWidth: 120 }}>
                   <FormControl fullWidth>
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DatePicker"]}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer
+                        sx={{ width: "350px", marginBottom: "40px" }}
+                        components={["DatePicker"]}
+                      >
                         <DatePicker
                           label={
                             <>
                               Date <span style={{ color: "red" }}>*</span>
                             </>
                           }
-                          sx={{ width: "350px", marginBottom: "40px" }}
+                          // sx={{ width: "350px", marginBottom: "40px" }}
                           //   sx={{ width: "400px !important", marginBottom: "40px" }}
                           onChange={(newDate) => {
                             setDate(newDate);
@@ -447,7 +453,7 @@ function TaskManagement() {
                           value={date}
                         />
                       </DemoContainer>
-                    </LocalizationProvider> */}
+                    </LocalizationProvider>
                   </FormControl>
                   {dateError && (
                     <div className="date-error-message">{dateError}</div>
@@ -455,10 +461,10 @@ function TaskManagement() {
                 </Box>
                 <br />
                 {/* <LocalizationProvider>
-            <DemoContainer components={["DatePicker"]}>
-              <DatePicker label="Basic date picker" />
-            </DemoContainer>
-          </LocalizationProvider> */}
+                  <DemoContainer components={["DatePicker"]}>
+                    <DatePicker label="Basic date picker" />
+                  </DemoContainer>
+                </LocalizationProvider> */}
                 <button onClick={addCard} type="submit">
                   Add
                 </button>
@@ -551,7 +557,7 @@ function TaskManagement() {
 
                 <Box sx={{ minWidth: 120 }}>
                   <FormControl fullWidth>
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
                           label={
@@ -569,7 +575,7 @@ function TaskManagement() {
                           value={date}
                         />
                       </DemoContainer>
-                    </LocalizationProvider> */}
+                    </LocalizationProvider>
                   </FormControl>
                   {dateError && (
                     <div className="date-error-message">{dateError}</div>
