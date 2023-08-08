@@ -303,31 +303,33 @@ function TaskManagement() {
                 maxHeight: "30px",
               }}
             >
-              <Droppable droppableId="delete-area">
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps}>
-                    {/* Render the delete icon here */}
-                    <IconButton>
-                      {showBin && (
-                        <DeleteIcon
-                          sx={{
-                            fontSize: "35px",
-                            cursor: "pointer",
-                            color: "grey",
-                            // position: "absolute",
-                            // top: "400px",
-                            // left: "5",
-                            // left: "500px",
-                            // right: "50px",
-                            // zIndex: "9999999999",
-                          }}
-                        />
-                      )}
-                    </IconButton>
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
+              <Box>
+                <Droppable droppableId="delete-area">
+                  {(provided) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps}>
+                      {/* Render the delete icon here */}
+                      <IconButton>
+                        {showBin && (
+                          <DeleteIcon
+                            sx={{
+                              fontSize: "35px",
+                              cursor: "pointer",
+                              color: "grey",
+                              // position: "absolute",
+                              // top: "400px",
+                              // left: "5",
+                              // left: "500px",
+                              // right: "50px",
+                              // zIndex: "9999999999",
+                            }}
+                          />
+                        )}
+                      </IconButton>
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </Box>
               {/* {task.length === 0 && (
                 <h4 style={{ fontSize: "15px" }}>Start by adding a new task</h4>
               )} */}
